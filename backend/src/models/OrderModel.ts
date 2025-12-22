@@ -45,8 +45,12 @@ export interface IOrder extends Document {
 
     total: number;
     status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+    isPaid: boolean; // Ajouté pour être cohérent avec le schéma
+    paidAt?: Date;
     trackingNumber?: string;
     notes?: string;
+    createdAt: Date; // <--- TRÈS IMPORTANT
+    updatedAt: Date;
 }
 
 const OrderSchema: Schema = new Schema({
@@ -75,6 +79,13 @@ const OrderSchema: Schema = new Schema({
     },
     trackingNumber: { type: String },
     notes: { type: String },
+    isPaid: { type: Boolean, required: true, default: false },
+    paidAt: { type: Date },
+    paymentResult: {
+        id: String,
+        status: String,
+        token: String
+    },
 }, {
     timestamps: true
 });

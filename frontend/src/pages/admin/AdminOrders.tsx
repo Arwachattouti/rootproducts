@@ -1,423 +1,266 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
-  Search, 
-  Filter, 
-  Eye, 
-  Edit, 
-  Truck, 
-  Package, 
-  CheckCircle,
-  Clock,
-  Download
+  Search, Eye, Download, Loader2, X 
 } from 'lucide-react';
+import { useGetAllOrdersQuery, useUpdateOrderStatusMutation } from '../../state/apiService';
 import { Order } from '../../types';
 
 const AdminOrders: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    // Mock orders data
-    const mockOrders: Order[] = [
-      {
-        id: 'CMD-2025-001',
-        customer: {
-          id: '1',
-          name: 'Ahmed Benali',
-          email: 'ahmed@example.com',
-          phone: '+216 20 123 456',
-          address: {
-            street: '15 Avenue Habib Bourguiba',
-            city: 'Tunis',
-            postalCode: '1000',
-            country: 'Tunisie'
-          }
-        },
-        items: [
-          {
-            product: {
-              id: '1',
-              name: 'Mloukhia Premium en Poudre',
-              price: 24.90,
-              images: [''],
-              category: 'poudre',
-              inStock: true,
-              weight: '250g',
-              ingredients: [],
-              benefits: [],
-              origin: 'Tunisie',
-              rating: 4.8,
-              reviewCount: 127,
-              description: ''
-            },
-            quantity: 2
-          }
-        ],
-        total: 74.70,
-        status: 'pending',
-        createdAt: new Date('2025-01-15'),
-        updatedAt: new Date('2025-01-15'),
-        trackingNumber: 'TN123456789'
-      },
-      {
-        id: 'CMD-2025-002',
-        customer: {
-          id: '2',
-          name: 'Fatma Chakroun',
-          email: 'fatma@example.com',
-          phone: '+216 21 456 789',
-          address: {
-            street: '25 Rue de la République',
-            city: 'Sfax',
-            postalCode: '3000',
-            country: 'Tunisie'
-          }
-        },
-        items: [
-          {
-            product: {
-              id: '3',
-              name: 'Coffret Découverte',
-              price: 49.90,
-              images: [''],
-              category: 'coffret',
-              inStock: true,
-              weight: '500g',
-              ingredients: [],
-              benefits: [],
-              origin: 'Tunisie',
-              rating: 4.6,
-              reviewCount: 73,
-              description: ''
-            },
-            quantity: 1
-          }
-        ],
-        total: 49.90,
-        status: 'confirmed',
-        createdAt: new Date('2025-01-14'),
-        updatedAt: new Date('2025-01-14')
-      },
-      {
-        id: 'CMD-2025-003',
-        customer: {
-          id: '3',
-          name: 'Sami Trabelsi',
-          email: 'sami@example.com',
-          phone: '+216 22 789 123',
-          address: {
-            street: '10 Avenue de la Liberté',
-            city: 'Sousse',
-            postalCode: '4000',
-            country: 'Tunisie'
-          }
-        },
-        items: [],
-        total: 19.90,
-        status: 'shipped',
-        createdAt: new Date('2025-01-12'),
-        updatedAt: new Date('2025-01-13'),
-        trackingNumber: 'TN987654321'
-      }
-    ];
-    
-    setOrders(mockOrders);
-    setFilteredOrders(mockOrders);
-  }, []);
+  // RÉCUPÉRATION DES DONNÉES
+  const { data: orders = [], isLoading } = useGetAllOrdersQuery();
+  const [updateStatus, { isLoading: isUpdating }] = useUpdateOrderStatusMutation();
 
-  useEffect(() => {
-    let filtered = orders;
+  // FILTRAGE DYNAMIQUE SÉCURISÉ
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      const search = searchTerm.toLowerCase().trim();
+      
+      // Sécurité : MongoDB utilise souvent _id, mais l'interface peut dire id
+      const rawId = (order as any)._id || (order as any).id || "";
+      const orderId = String(rawId).toLowerCase();
+      
+      // Sécurité : Utilisateur peut être null
+      const userName = order.user?.name ? String(order.user.name).toLowerCase() : '';
+      const userEmail = order.user?.email ? String(order.user.email).toLowerCase() : '';
 
-    if (searchTerm) {
-      filtered = filtered.filter(order =>
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+      const matchesSearch = 
+        orderId.includes(search) || 
+        userName.includes(search) || 
+        userEmail.includes(search);
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(order => order.status === statusFilter);
-    }
+      const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
 
-    setFilteredOrders(filtered);
+      return matchesSearch && matchesStatus;
+    });
   }, [orders, searchTerm, statusFilter]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'confirmed': return 'bg-blue-100 text-blue-800';
-      case 'shipped': return 'bg-purple-100 text-purple-800';
-      case 'delivered': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getStatusStyle = (status: string) => {
+    const styles: Record<string, string> = {
+      pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
+      shipped: 'bg-purple-100 text-purple-800 border-purple-200',
+      delivered: 'bg-green-100 text-green-800 border-green-200',
+      cancelled: 'bg-red-100 text-red-800 border-red-200',
+    };
+    return styles[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'En attente';
-      case 'confirmed': return 'Confirmée';
-      case 'shipped': return 'Expédiée';
-      case 'delivered': return 'Livrée';
-      default: return status;
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    try {
+      await updateStatus({ id: orderId, status: newStatus }).unwrap();
+      setShowModal(false);
+    } catch (err) {
+      alert("Erreur lors de la mise à jour du statut");
     }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending': return <Clock className="h-4 w-4" />;
-      case 'confirmed': return <CheckCircle className="h-4 w-4" />;
-      case 'shipped': return <Truck className="h-4 w-4" />;
-      case 'delivered': return <Package className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
-    }
-  };
-
-  const updateOrderStatus = (orderId: string, newStatus: string) => {
-    setOrders(prev => prev.map(order =>
-      order.id === orderId
-        ? { ...order, status: newStatus as any, updatedAt: new Date() }
-        : order
-    ));
-    setShowModal(false);
   };
 
   const exportOrders = () => {
-    // In a real app, this would generate and download a CSV/Excel file
     const csvContent = [
-      ['ID', 'Client', 'Email', 'Total', 'Statut', 'Date'].join(','),
-      ...filteredOrders.map(order => [
-        order.id,
-        order.customer.name,
-        order.customer.email,
-        order.total.toFixed(2),
-        getStatusLabel(order.status),
-        order.createdAt.toLocaleDateString('fr-FR')
-      ].join(','))
+      ['ID', 'Client', 'Total', 'Statut', 'Date'].join(','),
+      ...filteredOrders.map(o => {
+        const oId = (o as any)._id || (o as any).id || "";
+        return [
+          oId, 
+          o.user?.name || 'Inconnu', 
+          o.total.toFixed(2), 
+          o.status, 
+          new Date(o.createdAt).toLocaleDateString()
+        ].join(',');
+      })
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'commandes.csv';
+    a.download = `export-commandes-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
-    window.URL.revokeObjectURL(url);
   };
 
+  if (isLoading) return (
+    <div className="h-screen flex items-center justify-center">
+      <Loader2 className="animate-spin text-green-600 h-12 w-12" />
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Gestion des Commandes</h1>
-              <p className="text-gray-600">Gérez et suivez toutes les commandes</p>
-            </div>
-            <button
-              onClick={exportOrders}
-              className="flex items-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Exporter
-            </button>
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Gestion Commandes</h1>
+            <p className="text-gray-500 font-medium">Flux logistique en temps réel</p>
+          </div>
+          <button 
+            onClick={exportOrders} 
+            className="flex items-center bg-black text-white px-6 py-3 rounded-2xl font-bold hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+          >
+            <Download className="h-4 w-4 mr-2" /> EXPORTER CSV
+          </button>
+        </div>
+
+        {/* Filtres & Recherche */}
+        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 mb-8 flex flex-wrap gap-4 items-center">
+          <div className="relative flex-1 min-w-[300px]">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input 
+              type="text" 
+              placeholder="Rechercher un client ou un ID..." 
+              className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <select 
+            className="bg-gray-50 border-none py-3 px-6 rounded-2xl font-bold text-sm focus:ring-2 focus:ring-green-500 cursor-pointer"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">Tous les statuts</option>
+            <option value="pending">En attente</option>
+            <option value="confirmed">Confirmé</option>
+            <option value="shipped">En cours d'envoi</option>
+            <option value="delivered">Livré</option>
+            <option value="cancelled">Annulé</option>
+          </select>
+          <div className="text-[10px] font-black uppercase text-gray-400 ml-auto">
+            {filteredOrders.length} Commandes trouvées
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative">
-              <Search className="h-5 w-5 text-gray-400 absolute left-3 top-3" />
-              <input
-                type="text"
-                placeholder="Rechercher par ID, nom ou email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-            
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="all">Tous les statuts</option>
-              <option value="pending">En attente</option>
-              <option value="confirmed">Confirmées</option>
-              <option value="shipped">Expédiées</option>
-              <option value="delivered">Livrées</option>
-            </select>
-
-            <div className="flex items-center text-sm text-gray-600">
-              <Filter className="h-4 w-4 mr-2" />
-              {filteredOrders.length} commande{filteredOrders.length > 1 ? 's' : ''} trouvée{filteredOrders.length > 1 ? 's' : ''}
-            </div>
-          </div>
-        </div>
-
-        {/* Orders Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Commande
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Client
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{order.id}</div>
-                        {order.trackingNumber && (
-                          <div className="text-sm text-gray-500">Suivi: {order.trackingNumber}</div>
-                        )}
-                      </div>
+        {/* Tableau des commandes */}
+        <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
+          <table className="min-w-full">
+            <thead className="bg-gray-50/50 border-b border-gray-100">
+              <tr>
+                <th className="px-8 py-5 text-left text-xs font-black uppercase text-gray-400 tracking-widest">ID & Date</th>
+                <th className="px-8 py-5 text-left text-xs font-black uppercase text-gray-400 tracking-widest">Client</th>
+                <th className="px-8 py-5 text-left text-xs font-black uppercase text-gray-400 tracking-widest">Montant</th>
+                <th className="px-8 py-5 text-left text-xs font-black uppercase text-gray-400 tracking-widest">Statut</th>
+                <th className="px-8 py-5 text-right text-xs font-black uppercase text-gray-400 tracking-widest">Détails</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filteredOrders.map((order) => {
+                const orderUniqueId = (order as any)._id || (order as any).id;
+                return (
+                  <tr key={orderUniqueId} className="hover:bg-green-50/30 transition-colors group">
+                    <td className="px-8 py-6">
+                      <p className="font-black text-sm text-gray-900">#{String(orderUniqueId).slice(-6).toUpperCase()}</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {new Date(order.createdAt).toLocaleDateString('fr-TN')}
+                      </p>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{order.customer.name}</div>
-                        <div className="text-sm text-gray-500">{order.customer.email}</div>
-                      </div>
+                    <td className="px-8 py-6">
+                      <p className="font-bold text-sm text-gray-900">{order.user?.name || "Client Invité"}</p>
+                      <p className="text-xs text-gray-400">{order.user?.email || "Pas d'email"}</p>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-gray-900">
-                        {order.total.toFixed(2)}€
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        <span className="ml-1">{getStatusLabel(order.status)}</span>
+                    <td className="px-8 py-6 font-black text-gray-900">{order.total.toFixed(2)} DT</td>
+                    <td className="px-8 py-6">
+                      <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase border ${getStatusStyle(order.status)}`}>
+                        {order.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.createdAt.toLocaleDateString('fr-FR')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setShowModal(true);
-                          }}
-                          className="text-green-600 hover:text-green-900"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button className="text-blue-600 hover:text-blue-900">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                      </div>
+                    <td className="px-8 py-6 text-right">
+                      <button 
+                        onClick={() => { setSelectedOrder(order); setShowModal(true); }}
+                        className="p-3 bg-gray-100 rounded-xl hover:bg-black hover:text-white transition-all transform hover:scale-110"
+                      >
+                        <Eye size={18} />
+                      </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                );
+              })}
+            </tbody>
+          </table>
+          {filteredOrders.length === 0 && (
+            <div className="p-20 text-center text-gray-400 font-bold uppercase tracking-widest">
+              Aucune commande ne correspond à votre recherche
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Order Detail Modal */}
-        {showModal && selectedOrder && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    Détails de la commande {selectedOrder.id}
-                  </h2>
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
-                    ✕
-                  </button>
+      {/* Modal de Détails */}
+      {showModal && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[3rem] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <h2 className="text-xl font-black uppercase italic tracking-tighter">
+                Commande #{( (selectedOrder as any)._id || (selectedOrder as any).id ).slice(-6).toUpperCase()}
+              </h2>
+              <button 
+                onClick={() => setShowModal(false)} 
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+              >
+                <X size={24}/>
+              </button>
+            </div>
+            
+            <div className="p-8 max-h-[70vh] overflow-y-auto">
+              {/* Infos Client / Adresse */}
+              <div className="mb-8">
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4">Logistique de livraison</p>
+                <div className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100">
+                  <p className="font-bold text-gray-900">{selectedOrder.shippingAddress.address}</p>
+                  <p className="text-sm text-gray-500">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.postalCode}</p>
+                  <p className="text-sm text-gray-500 uppercase font-bold mt-1 text-green-600">{selectedOrder.shippingAddress.country}</p>
                 </div>
               </div>
-              
-              <div className="p-6 space-y-6">
-                {/* Customer Info */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Informations Client</h3>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p><strong>Nom:</strong> {selectedOrder.customer.name}</p>
-                    <p><strong>Email:</strong> {selectedOrder.customer.email}</p>
-                    <p><strong>Téléphone:</strong> {selectedOrder.customer.phone}</p>
-                    <p><strong>Adresse:</strong> {selectedOrder.customer.address.street}, {selectedOrder.customer.address.city} {selectedOrder.customer.address.postalCode}</p>
-                  </div>
-                </div>
 
-                {/* Order Items */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Articles Commandés</h3>
-                  <div className="space-y-2">
-                    {selectedOrder.items.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center bg-gray-50 rounded-lg p-3">
-                        <div>
-                          <p className="font-medium">{item.product.name}</p>
-                          <p className="text-sm text-gray-600">Quantité: {item.quantity}</p>
+              {/* Liste des articles */}
+              <div className="mb-8">
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4">Articles commandés</p>
+                <div className="space-y-3">
+                  {selectedOrder.items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-4 bg-white border border-gray-100 rounded-2xl">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center font-black text-xs">
+                          x{item.quantity}
                         </div>
-                        <p className="font-bold">{(item.product.price * item.quantity).toFixed(2)}€</p>
+                        <div>
+                          <p className="font-bold text-sm text-gray-900">{item.name}</p>
+                          <p className="text-[10px] text-gray-400 font-bold">{item.price.toFixed(2)} DT / unité</p>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold">Total:</span>
-                      <span className="text-lg font-bold text-green-600">{selectedOrder.total.toFixed(2)}€</span>
+                      <p className="font-black text-sm">{(item.price * item.quantity).toFixed(2)} DT</p>
                     </div>
-                  </div>
+                  ))}
                 </div>
+              </div>
 
-                {/* Status Update */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Mettre à jour le statut</h3>
-                  <div className="flex space-x-2">
-                    {['pending', 'confirmed', 'shipped', 'delivered'].map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => updateOrderStatus(selectedOrder.id, status)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                          selectedOrder.status === status
-                            ? 'bg-green-600 text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        {getStatusLabel(status)}
-                      </button>
-                    ))}
-                  </div>
+              {/* Mise à jour du statut */}
+              <div>
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4">Mettre à jour le statut</p>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'].map((status) => (
+                    <button
+                      key={status}
+                      disabled={isUpdating}
+                      onClick={() => handleStatusUpdate((selectedOrder as any)._id || (selectedOrder as any).id, status)}
+                      className={`py-3 rounded-xl text-[9px] font-black uppercase transition-all shadow-sm ${
+                        selectedOrder.status === status 
+                          ? 'bg-black text-white' 
+                          : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                      }`}
+                    >
+                      {isUpdating && selectedOrder.status === status ? '...' : status}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

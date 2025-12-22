@@ -1,7 +1,7 @@
 // frontend/src/state/apiService.ts
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Product, User, LoginCredentials, RegisterData, Order } from '../types';
+import { Product, User, LoginCredentials, RegisterData, Order, BlogPost, AdminStats } from '../types';
 
 export const apiService = createApi({
     reducerPath: 'api',
@@ -10,19 +10,17 @@ export const apiService = createApi({
         credentials: 'include', // Important pour les cookies JWT
     }),
 
-    tagTypes: ['Product', 'User', 'Order', 'Cart'],
+    tagTypes: ['Product', 'User', 'Order', 'Cart', 'Blog'],
 
     endpoints: (builder) => ({
-
-        // --- AUTHENTIFICATION ---
-
+        // --- AUTHENTIFICATION & PROFILS ---
         login: builder.mutation<User, LoginCredentials>({
             query: (credentials) => ({
                 url: 'users/login',
                 method: 'POST',
                 body: credentials,
             }),
-            invalidatesTags: ['User', 'Cart'], // On invalide le panier à la connexion
+            invalidatesTags: ['User', 'Cart'],
         }),
 
         register: builder.mutation<User, RegisterData>({
@@ -39,7 +37,7 @@ export const apiService = createApi({
                 url: 'users/logout',
                 method: 'POST',
             }),
-            invalidatesTags: ['User', 'Cart', 'Order'], // On vide tout au logout
+            invalidatesTags: ['User', 'Cart', 'Order'],
         }),
 
         getProfile: builder.query<User, void>({
@@ -56,8 +54,28 @@ export const apiService = createApi({
             invalidatesTags: ['User'],
         }),
 
-        // --- PRODUITS (AVEC CRUD ADMIN) ---
+        getAllUsers: builder.query<User[], void>({
+            query: () => 'users',
+            providesTags: ['User'],
+        }),
+        updateUser: builder.mutation<User, Partial<User> & { id: string }>({
+            query: ({ id, ...patch }) => ({
+                url: `users/${id}`,
+                method: 'PUT',
+                body: patch,
+            }),
+            invalidatesTags: ['User'], 
+        }),
 
+        deleteUser: builder.mutation<{ success: boolean; id: string }, string>({
+            query: (id) => ({
+                url: `users/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['User'],
+        }),
+
+        // --- PRODUITS (CRUD) ---
         getProducts: builder.query<Product[], void>({
             query: () => 'products',
             providesTags: (result) =>
@@ -71,15 +89,13 @@ export const apiService = createApi({
             providesTags: (result, error, id) => [{ type: 'Product', id }],
         }),
 
-        // --- FONCTIONS ADMIN MANQUANTES ---
-        
         createProduct: builder.mutation<Product, Partial<Product>>({
             query: (newProduct) => ({
                 url: 'products',
                 method: 'POST',
                 body: newProduct,
             }),
-            invalidatesTags: ['Product'], // Rafraîchit la liste automatiquement
+            invalidatesTags: ['Product'],
         }),
 
         updateProduct: builder.mutation<Product, Partial<Product> & { id: string }>({
@@ -99,8 +115,47 @@ export const apiService = createApi({
             invalidatesTags: ['Product'],
         }),
 
-        // --- PANIER (CART) ---
+        // --- BLOG (CRUD) ---
+        getBlogs: builder.query<BlogPost[], void>({
+            query: () => 'blogs',
+            providesTags: (result) =>
+                result
+                    ? [...result.map(({ _id }) => ({ type: 'Blog' as const, id: _id })), 'Blog']
+                    : ['Blog'],
+        }),
 
+        getBlogDetails: builder.query<BlogPost, string>({
+            query: (id) => `blogs/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Blog', id }],
+        }),
+
+        createBlog: builder.mutation<BlogPost, Partial<BlogPost>>({
+            query: (newBlog) => ({
+                url: 'blogs',
+                method: 'POST',
+                body: newBlog,
+            }),
+            invalidatesTags: ['Blog'],
+        }),
+
+        updateBlog: builder.mutation<BlogPost, Partial<BlogPost> & { id: string }>({
+            query: ({ id, ...patch }) => ({
+                url: `blogs/${id}`,
+                method: 'PUT',
+                body: patch,
+            }),
+            invalidatesTags: (result, error, { id }) => ['Blog', { type: 'Blog', id }],
+        }),
+
+        deleteBlog: builder.mutation<{ message: string }, string>({
+            query: (id) => ({
+                url: `blogs/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Blog'],
+        }),
+
+        // --- PANIER (CART) ---
         getCart: builder.query<any, void>({
             query: () => 'cart',
             providesTags: ['Cart'],
@@ -131,52 +186,90 @@ export const apiService = createApi({
             invalidatesTags: ['Cart'],
         }),
 
-        // --- COMMANDES ---
-
+        // --- COMMANDES (ORDERS) ---
         createOrder: builder.mutation<Order, any>({
             query: (orderData) => ({
                 url: 'orders',
                 method: 'POST',
                 body: orderData,
             }),
-            invalidatesTags: ['Order', 'Cart'], // Invalide le panier après commande
+            invalidatesTags: ['Order', 'Cart'],
         }),
-
+        createPaymeeToken: builder.mutation<any, {
+            amount: number;
+            first_name: string;
+            last_name: string;
+            email: string;
+            phone: string;
+            orderId: string
+        }>({
+            query: (paymentData) => ({
+                url: 'payments/paymee',
+                method: 'POST',
+                body: paymentData,
+            }),
+        }),
         getUserOrders: builder.query<Order[], void>({
             query: () => 'orders/myorders',
             providesTags: ['Order'],
         }),
 
-        // Optionnel : Pour l'admin
         getAllOrders: builder.query<Order[], void>({
             query: () => 'orders',
             providesTags: ['Order'],
         }),
 
-        getAllUsers: builder.query<User[], void>({
-    query: () => 'users', // Assurez-vous que cette route existe sur votre backend
-    providesTags: ['User'],
-}),
+        updateOrderStatus: builder.mutation<Order, { id: string; status: string }>({
+            query: ({ id, status }) => ({
+                url: `orders/${id}/status`,
+                method: 'PUT',
+                body: { status },
+            }),
+            invalidatesTags: (result, error, { id }) => ['Order', { type: 'Order', id }],
+        }),
+
+        // Dans votre apiService.ts existant
+        getAdminStats: builder.query<AdminStats, string>({
+            // On passe le paramètre 'range' (7d, 30d, etc.) à l'URL si votre backend le supporte
+            query: (range) => `orders/stats?range=${range}`,
+            providesTags: ['Order', 'Product', 'User'],
+        }),
+
+        verifyPaymeePayment: builder.query<{ success: boolean; message: string }, { token: string; orderId: string }>({
+            query: ({ token, orderId }) => `payments/verify/${token}?orderId=${orderId}`,
+            providesTags: ['Order'],
+        }),
     }),
 });
 
-// Hooks exportés mis à jour
 export const {
     useLoginMutation,
     useRegisterMutation,
     useLogoutMutation,
     useGetProfileQuery,
     useUpdateProfileMutation,
+    useGetAllUsersQuery,
+    useUpdateUserMutation,
+  useDeleteUserMutation,
     useGetProductsQuery,
     useGetProductDetailsQuery,
-    useCreateProductMutation,   // AJOUTÉ
-    useUpdateProductMutation,   // AJOUTÉ
-    useDeleteProductMutation,   // AJOUTÉ
+    useCreateProductMutation,
+    useUpdateProductMutation,
+    useDeleteProductMutation,
+    useGetBlogsQuery,
+    useGetBlogDetailsQuery,
+    useCreateBlogMutation,
+    useUpdateBlogMutation,
+    useDeleteBlogMutation,
     useGetCartQuery,
     useUpdateCartMutation,
     useRemoveFromCartMutation,
     useClearCartMutation,
     useCreateOrderMutation,
     useGetUserOrdersQuery,
-    useGetAllOrdersQuery        // AJOUTÉ
+    useGetAllOrdersQuery,
+    useUpdateOrderStatusMutation,
+    useGetAdminStatsQuery,
+    useCreatePaymeeTokenMutation,
+    useVerifyPaymeePaymentQuery
 } = apiService;

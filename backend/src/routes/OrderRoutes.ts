@@ -1,34 +1,27 @@
-// src/routes/OrderRoutes.ts
-
 import express from 'express';
-import { protect } from '../middleware/AuthMiddleware'; // Le middleware de protection
 import { 
     createOrder, 
     getUserOrders, 
-    getOrderById 
-} from '../controllers/OrderController'; // Les fonctions du contrôleur
+    getOrderById, 
+    getAllOrders, 
+    updateOrderStatus, 
+    deleteOrder, 
+    getAdminStats 
+} from '../controllers/OrderController';
+import { protect} from '../middleware/AuthMiddleware';
 
 const router = express.Router();
 
-// Toutes les routes de commande nécessitent que l'utilisateur soit connecté (middleware 'protect')
-// router.use(protect); // Vous pouvez appliquer 'protect' à toutes les routes d'un coup
-
-// --- Routes pour les utilisateurs connectés ---
-
-// POST /api/orders
-// Créer une nouvelle commande.
+// Routes Utilisateurs (Protégées)
 router.route('/').post(protect, createOrder);
+router.route('/myorders').get(protect, getUserOrders);
 
-// GET /api/orders/myorders
-// Récupérer l'historique de commandes de l'utilisateur connecté.
-router.route('/myorders').get(protect, getUserOrders); 
-
-// GET /api/orders/:id
-// Récupérer les détails d'une commande spécifique.
-// Note: Le 'protect' est déjà appliqué ici. La vérification de propriété est dans le contrôleur.
+router.route('/stats').get(protect,  getAdminStats);
 router.route('/:id').get(protect, getOrderById);
 
-// --- Routes d'administration (Ajout futur) ---
-// Par exemple : router.route('/').get(protect, admin, getOrders); // Pour récupérer TOUTES les commandes
+// Routes Admin
+router.route('/').get(protect,  getAllOrders);
+router.route('/:id/status').put(protect, updateOrderStatus);
+router.route('/:id').delete(protect, deleteOrder); // Route de suppression
 
 export default router;

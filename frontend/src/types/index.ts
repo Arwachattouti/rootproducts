@@ -38,7 +38,19 @@ export interface Customer {
     country: string;
   };
 }
-
+// --- Interface Blog (Nouveau) ---
+export interface BlogPost {
+  _id: string;
+  title: string;
+  category: 'Nutrition' | 'Culture' | 'Jardinage' | 'Cuisine' | 'Technique';
+  author: string;
+  date: string; // Format ISO string
+  readTime: string;
+  image: string;
+  excerpt: string;
+  content?: string; // Pour la page détail de l'article
+  tags: string[];
+}
 export interface Order {
   id: string;
   customer: Customer;
@@ -52,7 +64,8 @@ export interface Order {
 }
 
 export interface User {
-  id: string;
+ id?: string;      // Optionnel pour la compatibilité frontend
+  _id?: string;
   email: string;
   password: string;
   firstName: string;
@@ -90,10 +103,25 @@ export interface RegisterData {
 }
 
 export interface AdminStats {
-  totalOrders: number;
   totalRevenue: number;
+  totalOrders: number;
   totalCustomers: number;
   totalProducts: number;
-  recentOrders: Order[];
-  topProducts: { product: Product; sales: number }[];
+  newUsersCount: number; // Ajouté pour correspondre au contrôleur
+  recentOrders: {
+    id: string;
+    user: {
+      name: string;
+    };
+    createdAt: string; // ISO Date string renvoyée par MongoDB
+    total: number;
+    status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+  }[];
+  topProducts: {
+    product: {
+      _id: string;
+      name: string;
+    };
+    sales: number;
+  }[];
 }
