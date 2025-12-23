@@ -32,7 +32,7 @@ const Products: React.FC = () => {
   { id: 'epices', value: ['condiments', 'sauce', 'poudre'], label: 'Épices & Condiments',description: 'Le cœur du goût tunisien'},
   { id: 'sucre', value: 'confiture', label: 'Douceurs & Confitures',description: 'Plaisirs sucrés naturels'},
   { id: 'essentiels', value: ['huile', 'miel'], label: 'Huiles & Miels',description: 'Or liquide et nectars du terroir'},
-   { id: 'cereales', value: 'grains', label: 'Céréales',description: 'Semoules et farines artisanales'},
+   { id: 'cereales', value: 'graines', label: 'Céréales',description: 'Semoules et farines artisanales'},
   { id: 'divers', value: 'divers', label: 'Divers',description: 'Autres trésors à découvrir'}
 ];
 
