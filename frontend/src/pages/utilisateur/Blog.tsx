@@ -9,14 +9,14 @@ const FeaturedPost: React.FC<{ post: BlogPost }> = ({ post }) => (
     <div className="grid grid-cols-1 lg:grid-cols-2">
 
       {/* 1. Image : Hauteur réduite sur mobile (h-64) contre h-80 auparavant */}
-      <div className="relative overflow-hidden h-64 sm:h-80 lg:h-[550px]">
+      <div className="relative overflow-hidden font-seasons  h-64 sm:h-80 lg:h-[550px]">
         <img
           src={post.image}
           alt={post.title}
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
         />
         <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
-          <span className="bg-[#357A32] text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-lg">
+          <span className="bg-[#357A32] text-white px-3 py-1 rounded-full text-[9px] font-seasons  uppercase tracking-widest shadow-lg">
             À la une
           </span>
         </div>
@@ -26,7 +26,7 @@ const FeaturedPost: React.FC<{ post: BlogPost }> = ({ post }) => (
       <div className="p-6 sm:p-8 lg:p-16 flex flex-col justify-center">
 
         {/* Métadonnées plus compactes */}
-        <div className="flex items-center gap-3 mb-4 sm:mb-6 text-[10px] sm:text-sm font-bold text-gray-700 uppercase tracking-widest">
+        <div className="flex items-center gap-3 mb-4 sm:mb-6 text-[10px] sm:text-sm font-seasons uppercase tracking-widest">
           <span className="text-[#357A32]">{post.category}</span>
           <span>•</span>
           <span className="flex items-center gap-1">
@@ -35,29 +35,29 @@ const FeaturedPost: React.FC<{ post: BlogPost }> = ({ post }) => (
         </div>
 
         {/* Titre : Taille réduite sur mobile (text-2xl) pour éviter l'encombrement */}
-        <h2 className="text-2xl sm:text-3xl lg:text-5xl font-serif italic text-[#4B2E05] mb-4 sm:mb-6 leading-tight group-hover:text-[#357A32] transition-colors">
+        <h2 className="text-2xl sm:text-3xl lg:text-5xl font-seasons  text-[#4B2E05] mb-4 sm:mb-6 leading-tight group-hover:text-[#357A32] transition-colors">
           {post.title}
         </h2>
 
         {/* Excerpt : Taille de texte standard (text-base) sur mobile */}
-        <p className="text-gray-700 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed line-clamp-3">
+        <p className="font-seasons  text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed line-clamp-3">
           {post.excerpt}
         </p>
 
         {/* 3. Footer de carte : Séparateur et alignement */}
         <div className="flex items-center justify-between pt-6 border-t border-gray-50">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-full flex items-center justify-center text-[#4B2E05] font-bold border border-gray-100 text-xs sm:text-sm">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-full flex items-center justify-center text-[#4B2E05] font-seasons  border border-gray-100 text-xs sm:text-sm">
               {post.author.charAt(0)}
             </div>
-            <span className="text-xs sm:text-sm font-medium text-[#4B2E05]">{post.author}</span>
+            <span className="text-xs sm:text-sm font-seasons  text-[#4B2E05]">{post.author}</span>
           </div>
 
           <Link
             to={`/blog/${post._id}`}
-            className="text-[10px] sm:text-sm font-bold text-[#357A32] uppercase tracking-widest flex items-center gap-2 transition-all underline underline-offset-4"
+            className="text-[10px] sm:text-sm font-seasons text-[#357A32] uppercase tracking-widest flex items-center gap-2 transition-all underline underline-offset-4"
           >
-            Lire <span className="hidden sm:inline">l'article</span> <ArrowRight className="w-3 h-3" />
+            Lire <span className="hidden sm:inline font-seasons ">l'article</span> <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
       </div>
@@ -98,15 +98,15 @@ const Blog: React.FC = () => {
       {/* 1. Header : Réduit de py-20 à py-12 sur mobile */}
       <section className="py-12 sm:py-20 bg-gray-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <span className="text-[10px] sm:text-sm font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#357A32]">
+         <span className="px-3 py-1 rounded bg-[#357A32]/10 text-[#357A32] text-[10px] font-bold tracking-[0.2em] uppercase">
             Journal & Conseils
           </span>
           {/* Taille de texte ajustée : text-3xl sur mobile */}
-          <h1 className="text-3xl sm:text-6xl font-serif italic text-[#4B2E05] mt-4 mb-4 sm:mt-6 sm:mb-6">
-            Le Blog Root.
+          <h1 className="text-3xl sm:text-6xl font-seasons text-[#4B2E05] mt-4 mb-4 sm:mt-6 sm:mb-6">
+            NOS BLOG  
           </h1>
-          <p className="max-w-2xl mx-auto text-sm sm:text-base text-gray-700 italic px-2">
-            Conseils d'experts, bienfaits de nos <span className="text-[#357A32] font-semibold">Produits</span> et secrets de terroir.
+          <p className="max-w-2xl mx-auto font-seasons md:text-xl text-sm sm:text-base  px-2">
+            Conseils, bienfaits de nos <span className="text-[#357A32] font-seasons">produits</span> et secrets de terroir.
           </p>
         </div>
       </section>
@@ -135,9 +135,9 @@ const Blog: React.FC = () => {
                 <button
                   key={cat.value}
                   onClick={() => cat.value === 'all' ? setSearchParams({}) : setSearchParams({ category: cat.value })}
-                  className={`whitespace-nowrap px-5 py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all border ${selectedCategory === cat.value
-                      ? "bg-[#4B2E05] border-[#4B2E05] text-white shadow-md shadow-[#4B2E05]/20"
-                      : "bg-white border-gray-100 text-gray-500 active:bg-gray-50"
+                  className={`whitespace-nowrap px-5 py-2 rounded-full text-[10px] sm:text-xs font-seasons uppercase tracking-widest transition-all border ${selectedCategory === cat.value
+                      ? "bg-[#4B2E05] border-[#4B2E05] text-white  font-seasons  shadow-md shadow-[#4B2E05]/20"
+                      : "bg-white border-gray-100 font-seasons  active:bg-gray-50"
                     }`}
                 >
                   {cat.label}
@@ -152,7 +152,7 @@ const Blog: React.FC = () => {
         {filteredPosts.length === 0 ? (
           <div className="text-center py-16 sm:py-20 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 mx-4 sm:mx-0">
             <AlertCircle className="w-10 h-10 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-700 font-serif italic">Aucun article ne correspond à votre recherche.</p>
+            <p className="text-gray-700 font-seasons ">Aucun article ne correspond à votre recherche.</p>
           </div>
         ) : (
           <>
@@ -167,7 +167,7 @@ const Blog: React.FC = () => {
                 <article key={post._id} className="group flex flex-col bg-white">
 
                   {/* Image : Hauteur adaptée (h-56) sur mobile pour ne pas trop étirer la page */}
-                  <div className="relative h-56 sm:h-64 rounded-2xl overflow-hidden mb-5 bg-gray-100">
+                  <div className="relative h-56 sm:h-64 rounded-2xl overflow-hidden font-seasons  mb-5 bg-gray-100">
                     <img
                       src={post.image}
                       alt={post.title}
@@ -175,14 +175,14 @@ const Blog: React.FC = () => {
                     />
                     {/* Badge catégorie sur l'image */}
                     <div className="absolute top-3 left-3">
-                      <span className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded text-[9px] font-bold uppercase text-[#357A32] shadow-sm">
+                      <span className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded text-[9px] font-seasons  uppercase text-[#357A32] shadow-sm">
                         {post.category}
                       </span>
                     </div>
                   </div>
 
                   {/* Métadonnées (Date et Temps de lecture) */}
-                  <div className="flex items-center gap-3 text-[9px] font-bold tracking-widest text-gray-700 mb-3">
+                  <div className="flex items-center gap-3 text-[9px] font-seasons  tracking-widest mb-3">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {new Date(post.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
@@ -195,19 +195,19 @@ const Blog: React.FC = () => {
                   </div>
 
                   {/* Titre : text-lg sur mobile pour une lecture plus douce */}
-                  <h3 className="text-lg sm:text-xl font-serif italic text-[#4B2E05] mb-3 group-hover:text-[#357A32] transition-colors leading-snug">
+                  <h3 className="text-lg sm:text-xl font-seasons  md:text-2xl  text-[#4B2E05] mb-3 group-hover:text-[#357A32] transition-colors leading-snug">
                     {post.title}
                   </h3>
 
                   {/* Extrait : text-sm sur mobile pour la légèreté */}
-                  <p className="text-sm text-gray-700 leading-relaxed mb-5 line-clamp-2">
+                  <p className="text-sm font-seasons  md:text-xl leading-relaxed mb-5 line-clamp-2">
                     {post.excerpt}
                   </p>
 
                   {/* Lien "Lire l'article" avec micro-interaction */}
                   <Link
                     to={`/blog/${post._id}`}
-                    className="mt-auto text-[10px] font-bold text-[#357A32] uppercase tracking-[0.2em] flex items-center gap-2 group-hover:gap-3 transition-all"
+                    className="mt-auto text-[10px] font-seasons   md:text-lg text-[#357A32] uppercase tracking-[0.2em] flex items-center gap-2 group-hover:gap-3 transition-all"
                   >
                     Lire l'article <ArrowRight className="w-3 h-3" />
                   </Link>

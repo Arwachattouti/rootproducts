@@ -7,13 +7,10 @@ export const apiService = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
         baseUrl: '/api/',
-        credentials: 'include', // Important pour les cookies JWT
+        credentials: 'include',
     }),
-
     tagTypes: ['Product', 'User', 'Order', 'Cart', 'Blog'],
-
     endpoints: (builder) => ({
-        // --- AUTHENTIFICATION & PROFILS ---
         login: builder.mutation<User, LoginCredentials>({
             query: (credentials) => ({
                 url: 'users/login',

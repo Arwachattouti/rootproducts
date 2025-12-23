@@ -78,11 +78,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         </div>
                     </div>
 
-                    <h3 className=" text-2xl text-[#4B2E05] mb-2 line-clamp-1 group-hover:text-[#357A32] transition-colors">
+                  <h3 className="font-seasons text-2xl text-[#4B2E05] mb-1 line-clamp-2  group-hover:text-[#357A32] transition-colors">
                         {product.name}
                     </h3>
 
-                    <p className=" h-12 text-base line-clamp-2 mb-6 leading-relaxed">
+                    <p className=" h-12 text-base  md:text-lg font-seasons line-clamp-2 mb-6 leading-relaxed">
                         {product.description}
                     </p>
 
@@ -90,11 +90,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     <div className="mt-1 flex items-center justify-between">
                         <div className="flex flex-col">
                             {product.originalPrice && product.originalPrice > product.price && (
-                                <span className="text-lg">
+                                <span className="text-lg ">
                                     {product.originalPrice.toFixed(3)} DT
                                 </span>
                             )}
-                            <span className="text-xl font-bold text-[#4B2E05]">
+                            <span className="text-xl font-seasons text-[#4B2E05]">
                                 {product.price.toFixed(3)} <span className="text-lg">DT</span>
                             </span>
                         </div>
@@ -124,9 +124,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     {/* 4. Détails Techniques (Plus discrets) */}
                     <div className="mt-2 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                         <div className=" tracking-tight">
-                            <span className="text-base">{product.weight}</span>
+                            <span className="text-base font-seasons">{product.weight}</span>
                             <span className="mx-2 text-gray-300">•</span>
-                            <span>{product.origin}</span>
+                            <span className="font-seasons">{product.origin}</span>
                         </div>
 
                         <div className="flex items-center gap-2 text-[#357A32] font-bold bg-green-50 px-2 py-0.5 rounded border border-green-100">

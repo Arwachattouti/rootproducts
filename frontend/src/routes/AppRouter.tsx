@@ -13,7 +13,9 @@ import Products from '../pages/utilisateur/Products';
 import ProductDetail from '../pages/utilisateur/ProductDetail';
 import Panier from '../pages/utilisateur/Panier';
 import Paiement from '../pages/utilisateur/Paiement';
+
 import OrderSuccess from '../pages/utilisateur/OrderSuccess';
+import paymeeOrderSuccess from '../pages/utilisateur/paymeeOrderSuccess';
 import About from '../pages/utilisateur/About';
 import Contact from '../pages/utilisateur/Contact';
 

@@ -26,15 +26,15 @@ const Products: React.FC = () => {
     }
   }, [products]);
 
-  const categories = [
-    { value: '', label: 'Toute la collection' },
-    { value: ['condiments', 'sauce'], label: 'Condiments & Sauces' },
-    { value: 'grains', label: 'Graines & Céréales' },
-    { value: 'confiture', label: 'Douceurs & Confitures' },
-    { value: ['huile', 'miel'], label: 'Huiles & Miels' },
-    { value: 'poudre', label: 'Épices & Poudres' },
-    { value: 'coffret', label: 'Nos Couffins' }
-  ];
+ const categories = [
+  { id: 'all', value: '', label: 'Toute la collection', icon: 'AllIcon' },
+    { id: 'saison', value: 'saison', label: 'Produits de Saison',description: 'Récoltes fraîches du moment'},
+  { id: 'epices', value: ['condiments', 'sauce', 'poudre'], label: 'Épices & Condiments',description: 'Le cœur du goût tunisien'},
+  { id: 'sucre', value: 'confiture', label: 'Douceurs & Confitures',description: 'Plaisirs sucrés naturels'},
+  { id: 'essentiels', value: ['huile', 'miel'], label: 'Huiles & Miels',description: 'Or liquide et nectars du terroir'},
+   { id: 'cereales', value: 'grains', label: 'Céréales',description: 'Semoules et farines artisanales'},
+  { id: 'divers', value: 'divers', label: 'Divers',description: 'Autres trésors à découvrir'}
+];
 
   const sortOptions = [
     { value: 'default', label: 'Ordre traditionnel' },
@@ -91,7 +91,7 @@ const Products: React.FC = () => {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-[#357A32]" />
-        <p className="mt-4 font-serif italic">Chargement du terroir...</p>
+        <p className="mt-4 font-serif ">Chargement du terroir...</p>
       </div>
     );
   }
@@ -100,16 +100,15 @@ const Products: React.FC = () => {
     <div className="min-h-screen bg-white text-gray-800">
 
       {/* 1. Header Section - Ajusté pour Mobile */}
-      <section className="relative py-12 md:py-20 bg-gray-50 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+      <section className="py-12 sm:py-20 bg-gray-50 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 text-center">
           <span className="px-3 py-1 rounded bg-[#357A32]/10 text-[#357A32] text-[10px] font-bold tracking-[0.2em] uppercase">
             Catalogue Officiel
           </span>
-          <h1 className="text-3xl md:text-6xl font-serif italic text-[#4B2E05] mt-4 mb-4">
-            Nos Produits
+          <h1 className="text-3xl md:text-6xl font-seasons text-[#4B2E05] mt-2 mb-4">
+            Nos produits
           </h1>
-          <div className="h-1 w-16 bg-[#357A32] mx-auto mb-6"></div>
-          <p className="max-w-xl mx-auto text-base md:text-lg  italic px-2">
+          <p className="max-w-xl mx-auto text-base md:text-lg   px-2">
             L'essence du <span className="text-[#357A32] font-semibold">terroir tunisien</span>.
           </p>
         </div>
@@ -151,7 +150,7 @@ const Products: React.FC = () => {
 
             <div className="relative h-full lg:h-auto w-80 lg:w-full bg-white lg:bg-transparent p-8 lg:p-0 overflow-y-auto">
               <div className="flex lg:hidden items-center justify-between mb-8">
-                <h2 className="text-xl font-serif italic text-[#4B2E05]">Filtres</h2>
+                <h2 className="text-xl font-serif  text-[#4B2E05]">Filtres</h2>
                 <button onClick={() => setIsFilterOpen(false)}><X className="h-6 w-6" /></button>
               </div>
 
@@ -221,8 +220,8 @@ const Products: React.FC = () => {
           {/* 3. Grille de Produits */}
           <main className="flex-1">
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
-              <div className=" text-lg italic">
-                <span className="text-[#4B2E05] font-bold not-italic">{processedProducts.length}</span> produits
+              <div className=" text-lg">
+                <span className="text-[#4B2E05] font-seasons ">{processedProducts.length}</span> produits
               </div>
 
               {/* Sélecteur de vue (Caché sur petit mobile pour simplifier) */}

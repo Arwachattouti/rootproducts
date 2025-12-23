@@ -44,7 +44,7 @@ const ProductDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#FDFCF9] flex flex-col items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-[#357A32] mb-4" />
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Préparation de la fiche...</p>
+        <p className="text-xs font-seasons uppercase tracking-widest text-gray-400">Préparation de la fiche...</p>
       </div>
     );
   }
@@ -54,10 +54,10 @@ const ProductDetail: React.FC = () => {
       <div className="min-h-screen bg-[#FDFCF9] flex items-center justify-center px-4">
         <div className="bg-white p-10 rounded-[2rem] shadow-sm text-center max-w-md border border-gray-100">
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-serif italic text-[#4B2E05] mb-4">Produit introuvable</h2>
+          <h2 className="text-2xl font-seasons  text-[#4B2E05] mb-4">Produit introuvable</h2>
           <button
             onClick={() => navigate('/products')}
-            className="bg-[#4B2E05] text-white px-8 py-3 rounded-xl hover:bg-[#357A32] transition-all font-bold text-[10px] uppercase tracking-widest"
+            className="bg-[#4B2E05] text-white px-8 py-3 rounded-xl hover:bg-[#357A32] transition-all font-seasons text-[10px] uppercase tracking-widest"
           >
             Retour à la boutique
           </button>
@@ -73,9 +73,9 @@ const ProductDetail: React.FC = () => {
     {/* Navigation - Plus compacte sur mobile */}
     <button
       onClick={() => navigate(-1)}
-      className="group flex items-center text-[#4B2E05] hover:text-[#357A32] mb-6 sm:mb-12 font-bold text-sm uppercase tracking-widest transition-colors"
+      className="group flex items-center text-[#4B2E05] hover:text-[#357A32] mb-6 sm:mb-12 font-seasons text-sm uppercase tracking-widest transition-colors"
     >
-      <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+      <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 font-seasons transition-transform" />
       Retour
     </button>
 
@@ -83,7 +83,7 @@ const ProductDetail: React.FC = () => {
       
       {/* Section Images - Coins légèrement moins arrondis sur mobile pour maximiser l'image */}
       <div className="space-y-4">
-        <div className="bg-white rounded-3xl sm:rounded-[2.5rem] shadow-sm overflow-hidden border border-gray-100 aspect-square relative">
+        <div className="bg-white rounded-3xl sm:rounded-[2.5rem] shadow-sm overflow-hidden border font-seasons border-gray-100 aspect-square relative">
           <img
             src={product.images[selectedImageIndex]}
             alt={product.name}
@@ -91,7 +91,7 @@ const ProductDetail: React.FC = () => {
           />
           {/* Badge Promo flottant sur l'image en mobile */}
           {product.originalPrice && product.originalPrice > product.price && (
-             <div className="absolute top-4 left-4 bg-[#4B2E05] text-white px-3 py-1 rounded-lg text-[10px] font-bold">
+             <div className="absolute top-4 left-4 bg-[#4B2E05] text-white px-3 py-1 rounded-lg text-[10px] font-seasons ">
                PROMO
              </div>
           )}
@@ -122,49 +122,49 @@ const ProductDetail: React.FC = () => {
           {isInStock ? 'En Stock' : 'Épuisé'}
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-serif italic text-[#4B2E05] mb-3">{product.name}</h1>
+        <h1 className="text-3xl sm:text-5xl font-seasons  text-[#4B2E05] mb-3">{product.name}</h1>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center text-yellow-400">
+          <div className="flex items-center font-seasons text-yellow-400">
             {[...Array(5)].map((_, i) => (
               <Star key={i} size={14} className={i < Math.floor(product.rating) ? 'fill-current' : 'text-gray-200'} />
             ))}
           </div>
-          <span className="text-[10px] sm:text-sm tracking-widest text-gray-500">
+          <span className="text-[10px] sm:text-sm font-seasons tracking-widest text-gray-500">
             {product.rating} ({product.reviewCount} avis)
           </span>
         </div>
 
         <div className="flex items-baseline gap-3 mb-6">
-          <span className="text-3xl sm:text-4xl font-black text-[#4B2E05]">
-            {product.price.toFixed(3)} <span className="text-lg">DT</span>
+          <span className="text-3xl sm:text-4xl font-seasons text-[#4B2E05]">
+            {product.price.toFixed(3)} <span className="text-3xl sm:text-4xl  font-seasons ">DT</span>
           </span>
           {product.originalPrice && (
-            <span className="text-lg text-gray-300 line-through font-light">
+            <span className="text-lg text-gray-300 line-through font-seasons">
               {product.originalPrice.toFixed(3)}
             </span>
           )}
         </div>
 
-        <p className="leading-relaxed mb-8 text-gray-600 text-base sm:text-lg">
+        <p className="leading-relaxed mb-8  font-seasons  text-base sm:text-lg">
           {product.description}
         </p>
 
         {/* Spécifications - Format Badge sur Mobile */}
         <div className="grid grid-cols-2 gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm mb-8">
           <div>
-            <span className="block text-sm text-gray-400 uppercase tracking-widest mb-1">Poids net</span>
-            <span className="text-[#4B2E05] font-bold text-sm sm:text-base">{product.weight}</span>
+            <span className="block text-smuppercase tracking-widest font-seasons md:text-xl  mb-1">Poids net</span>
+            <span className="text-[#4B2E05]  text-sm sm:text-base font-seasons ">{product.weight}</span>
           </div>
           <div>
-            <span className="block text-sm text-gray-400 uppercase tracking-widest mb-1">Origine</span>
-            <span className="text-[#4B2E05] font-bold text-sm sm:text-base">{product.origin}</span>
+            <span className="block text-smuppercase tracking-widest mb-1 font-seasons md:text-xl ">Origine</span>
+            <span className="text-[#4B2E05] text-sm sm:text-base font-seasons ">{product.origin}</span>
           </div>
-          <div className="col-span-2 pt-3 border-t border-gray-50">
-            <span className="block text-sm text-gray-400 uppercase tracking-widest mb-2">Bienfaits</span>
-            <div className="flex flex-wrap gap-1.5">
+          <div className="col-span-2 pt-3 border-t border-gray-50 ">
+            <span className="block text-sm  uppercase tracking-widest mb-2 font-seasons md:text-xl ">Bienfaits</span>
+            <div className="flex flex-wrap gap-1.5 font-seasons ">
               {product.benefits.map((benefit, index) => (
-                <span key={index} className="text-sm font-bold text-[#357A32] bg-[#357A32]/5 px-2 py-1 rounded-md">
+                <span key={index} className="text-smfont-seasons text-[#357A32] bg-[#357A32]/5 px-2 py-1 rounded-md">
                   {benefit}
                 </span>
               ))}
@@ -198,7 +198,7 @@ const ProductDetail: React.FC = () => {
               disabled={!isInStock || isAdding}
               className={`flex-1 flex items-center justify-center gap-2 h-[52px] rounded-xl font-bold text-sm  tracking-widest transition-all shadow-lg ${
                 isInStock
-                  ? 'bg-[#4B2E05] text-white active:scale-95'
+                  ? 'bg-[#4B2E05] text-white font-seasons  md:text-xl active:scale-95'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
             >
@@ -213,7 +213,7 @@ const ProductDetail: React.FC = () => {
         </div>
 
         {/* Réassurance - Horizontale et scrollable sur mobile */}
-        <div className="mt-10 flex justify-between sm:grid sm:grid-cols-3 gap-2 border-t border-gray-100 pt-8">
+        <div className="mt-10 flex justify-between sm:grid md:text-xl sm:grid-cols-3 gap-2 border-t border-gray-100 pt-8">
           {[
             { icon: <Truck size={18}/>, text: "Livraison 48h" },
             { icon: <Shield size={18}/>, text: "Paiement Cash" },
@@ -221,9 +221,9 @@ const ProductDetail: React.FC = () => {
           ].map((item, idx) => (
             <div key={idx} className="flex flex-col items-center flex-1">
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm mb-2 border border-gray-50">
-                <span className="text-[#357A32] ">{item.icon}</span>
+                <span className="text-[#357A32]  ">{item.icon}</span>
               </div>
-              <span className="text-base  test-serif tracking-tighter text-[#4B2E05] text-center">{item.text}</span>
+              <span className="text-base font-seasons  tracking-tighter md:text-xl text-[#4B2E05] text-center">{item.text}</span>
             </div>
           ))}
         </div>
