@@ -16,14 +16,13 @@ import Paiement from '../pages/utilisateur/Paiement';
 import OrderSuccess from '../pages/utilisateur/OrderSuccess';
 import About from '../pages/utilisateur/About';
 import Contact from '../pages/utilisateur/Contact';
-import Producers from '../pages/draft/Producers';
-import Recipes from '../pages/draft/Recipes';
+
 import Blog from '../pages/utilisateur/Blog';
 import BlogDetail from '../pages/utilisateur/BlogDetail'; 
 import Account from '../pages/utilisateur/Account';
-import Legal from '../pages/draft/Legal';
-import Privacy from '../pages/draft/Privacy';
-import Terms from '../pages/draft/Terms';
+import Legal from '../pages/utilisateur/legal';
+import Privacy from '../pages/utilisateur/Privacy';
+import Terms from '../pages/utilisateur/Terms';
 import Login from '../pages/authentification/Login';
 import Register from '../pages/authentification/Register';
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -73,11 +72,8 @@ const AppRoutes = () => {
                 <Route path="/order-success" element={<OrderSuccess />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/producers" element={<Producers />} />
-                <Route path="/recipes" element={<Recipes />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:id" element={<BlogDetail />} />
-                
                 <Route path="/account" element={
                   <ProtectedRoute>
                     <Account />

@@ -59,14 +59,14 @@ const Legal: React.FC = () => {
               <p><strong>Hébergeur :</strong> Netlify, Inc.</p>
               <p><strong>Adresse :</strong> 2325 3rd Street, Suite 296, San Francisco, CA 94107, USA</p>
               <p>
-  <strong>Site web :</strong>{' '}
-  <a
-    href="https://www.netlify.com"
-    className="text-green-600 hover:text-green-700"
-  >
-    www.netlify.com
-  </a>
-</p>
+                <strong>Site web :</strong>{' '}
+                <a
+                  href="https://www.netlify.com"
+                  className="text-green-600 hover:text-green-700"
+                >
+                  www.netlify.com
+                </a>
+              </p>
 
             </div>
           </section>
@@ -76,17 +76,17 @@ const Legal: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Propriété intellectuelle</h2>
             <div className="text-gray-700 space-y-4">
               <p>
-                L'ensemble de ce site relève de la législation tunisienne et internationale sur le droit d'auteur 
-                et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les 
+                L'ensemble de ce site relève de la législation tunisienne et internationale sur le droit d'auteur
+                et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les
                 documents téléchargeables et les représentations iconographiques et photographiques.
               </p>
               <p>
-                La reproduction de tout ou partie de ce site sur un support électronique quel qu'il soit est 
+                La reproduction de tout ou partie de ce site sur un support électronique quel qu'il soit est
                 formellement interdite sauf autorisation expresse du directeur de la publication.
               </p>
               <p>
-                Les marques ROOT Products et tous les logos figurant sur le site sont des marques déposées. 
-                Toute reproduction totale ou partielle de ces marques sans autorisation préalable et écrite 
+                Les marques ROOT Products et tous les logos figurant sur le site sont des marques déposées.
+                Toute reproduction totale ou partielle de ces marques sans autorisation préalable et écrite
                 est prohibée.
               </p>
             </div>
@@ -97,18 +97,18 @@ const Legal: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Responsabilité</h2>
             <div className="text-gray-700 space-y-4">
               <p>
-                Les informations contenues sur ce site sont aussi précises que possible et le site remis à jour 
+                Les informations contenues sur ce site sont aussi précises que possible et le site remis à jour
                 à différentes périodes de l'année, mais peut toutefois contenir des inexactitudes ou des omissions.
               </p>
               <p>
-                Si vous constatez une lacune, erreur ou ce qui parait être un dysfonctionnement, merci de bien 
-                vouloir le signaler par email, à l'adresse contact@rootproducts.tn, en décrivant le problème 
+                Si vous constatez une lacune, erreur ou ce qui parait être un dysfonctionnement, merci de bien
+                vouloir le signaler par email, à l'adresse contact@rootproducts.tn, en décrivant le problème
                 de la manière la plus précise possible.
               </p>
               <p>
-                ROOT Products ne pourra être tenue responsable des dommages directs et indirects causés au 
-                matériel de l'utilisateur, lors de l'accès au site rootproducts.tn, et résultant soit de 
-                l'utilisation d'un matériel ne répondant pas aux spécifications indiquées, soit de l'apparition 
+                ROOT Products ne pourra être tenue responsable des dommages directs et indirects causés au
+                matériel de l'utilisateur, lors de l'accès au site rootproducts.tn, et résultant soit de
+                l'utilisation d'un matériel ne répondant pas aux spécifications indiquées, soit de l'apparition
                 d'un bug ou d'une incompatibilité.
               </p>
             </div>
@@ -119,16 +119,16 @@ const Legal: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Données personnelles</h2>
             <div className="text-gray-700 space-y-4">
               <p>
-                Conformément à la loi tunisienne sur la protection des données personnelles, vous disposez d'un 
+                Conformément à la loi tunisienne sur la protection des données personnelles, vous disposez d'un
                 droit d'accès, de rectification et de suppression des données vous concernant.
               </p>
               <p>
-                Pour exercer ce droit, adressez-vous à : ROOT Products SARL, Avenue Habib Bourguiba, 
+                Pour exercer ce droit, adressez-vous à : ROOT Products SARL, Avenue Habib Bourguiba,
                 1000 Tunis, Tunisie, ou par email à contact@rootproducts.tn.
               </p>
               <p>
-                Aucune information personnelle de l'utilisateur du site rootproducts.tn n'est publiée à 
-                l'insu de l'utilisateur, échangée, transférée, cédée ou vendue sur un support quelconque à 
+                Aucune information personnelle de l'utilisateur du site rootproducts.tn n'est publiée à
+                l'insu de l'utilisateur, échangée, transférée, cédée ou vendue sur un support quelconque à
                 des tiers.
               </p>
             </div>
@@ -138,7 +138,7 @@ const Legal: React.FC = () => {
           <section>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Droit applicable</h2>
             <p className="text-gray-700">
-              Tout litige en relation avec l'utilisation du site rootproducts.tn est soumis au droit tunisien. 
+              Tout litige en relation avec l'utilisation du site rootproducts.tn est soumis au droit tunisien.
               Il est fait attribution exclusive de juridiction aux tribunaux compétents de Tunis.
             </p>
           </section>

@@ -5,37 +5,59 @@ import { useGetBlogsQuery } from '../../state/apiService';
 import { BlogPost } from '../../types';
 
 const FeaturedPost: React.FC<{ post: BlogPost }> = ({ post }) => (
-  <div className="group relative bg-white rounded-[2rem] border border-gray-100 overflow-hidden transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.05)] mb-20">
+  <div className="group relative bg-white rounded-[2rem] border border-gray-100 overflow-hidden transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.05)] mb-10 sm:mb-20">
     <div className="grid grid-cols-1 lg:grid-cols-2">
-      <div className="relative overflow-hidden h-80 lg:h-[550px]">
-        <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-        <div className="absolute top-6 left-6">
-          <span className="bg-[#357A32] text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">
+
+      {/* 1. Image : Hauteur réduite sur mobile (h-64) contre h-80 auparavant */}
+      <div className="relative overflow-hidden h-64 sm:h-80 lg:h-[550px]">
+        <img
+          src={post.image}
+          alt={post.title}
+          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+        />
+        <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
+          <span className="bg-[#357A32] text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-lg">
             À la une
           </span>
         </div>
       </div>
-      <div className="p-8 lg:p-16 flex flex-col justify-center">
-        <div className="flex items-center gap-4 mb-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+
+      {/* 2. Contenu : Padding ajusté (p-6 sur mobile) */}
+      <div className="p-6 sm:p-8 lg:p-16 flex flex-col justify-center">
+
+        {/* Métadonnées plus compactes */}
+        <div className="flex items-center gap-3 mb-4 sm:mb-6 text-[10px] sm:text-sm font-bold text-gray-700 uppercase tracking-widest">
           <span className="text-[#357A32]">{post.category}</span>
           <span>•</span>
-          <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {post.readTime}</span>
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" /> {post.readTime}
+          </span>
         </div>
-        <h2 className="text-3xl lg:text-5xl font-serif italic text-[#4B2E05] mb-6 leading-tight group-hover:text-[#357A32] transition-colors">
+
+        {/* Titre : Taille réduite sur mobile (text-2xl) pour éviter l'encombrement */}
+        <h2 className="text-2xl sm:text-3xl lg:text-5xl font-serif italic text-[#4B2E05] mb-4 sm:mb-6 leading-tight group-hover:text-[#357A32] transition-colors">
           {post.title}
         </h2>
-        <p className="text-gray-500 text-lg mb-8 leading-relaxed font-light line-clamp-3">
+
+        {/* Excerpt : Taille de texte standard (text-base) sur mobile */}
+        <p className="text-gray-700 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed line-clamp-3">
           {post.excerpt}
         </p>
-        <div className="flex items-center justify-between pt-8 border-t border-gray-50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-[#4B2E05] font-bold border border-gray-100 text-sm">
+
+        {/* 3. Footer de carte : Séparateur et alignement */}
+        <div className="flex items-center justify-between pt-6 border-t border-gray-50">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-full flex items-center justify-center text-[#4B2E05] font-bold border border-gray-100 text-xs sm:text-sm">
               {post.author.charAt(0)}
             </div>
-            <span className="text-sm font-medium text-[#4B2E05]">{post.author}</span>
+            <span className="text-xs sm:text-sm font-medium text-[#4B2E05]">{post.author}</span>
           </div>
-          <Link to={`/blog/${post._id}`} className="text-[10px] font-bold text-[#357A32] uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all underline underline-offset-4">
-            Lire l'article <ArrowRight className="w-3 h-3" />
+
+          <Link
+            to={`/blog/${post._id}`}
+            className="text-[10px] sm:text-sm font-bold text-[#357A32] uppercase tracking-widest flex items-center gap-2 transition-all underline underline-offset-4"
+          >
+            Lire <span className="hidden sm:inline">l'article</span> <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
       </div>
@@ -48,7 +70,7 @@ const Blog: React.FC = () => {
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const selectedCategory = searchParams.get('category') || 'all';
-  const { data: blogs = [], isLoading, error } = useGetBlogsQuery();
+  const { data: blogs = [], isLoading } = useGetBlogsQuery();
 
   const categories = [
     { value: 'all', label: 'Tous les articles' },
@@ -73,76 +95,120 @@ const Blog: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <section className="py-20 bg-gray-50 border-b border-gray-100">
+      {/* 1. Header : Réduit de py-20 à py-12 sur mobile */}
+      <section className="py-12 sm:py-20 bg-gray-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#357A32]">Journal & Conseils</span>
-          <h1 className="text-4xl md:text-6xl font-serif italic text-[#4B2E05] mt-6 mb-6">Le Blog Root.</h1>
-          <p className="max-w-2xl mx-auto text-gray-500 font-light italic">
-            Conseils d'experts, bienfaits de la <span className="text-[#357A32] font-semibold">Mloukhia</span> et secrets de terroir.
+          <span className="text-[10px] sm:text-sm font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#357A32]">
+            Journal & Conseils
+          </span>
+          {/* Taille de texte ajustée : text-3xl sur mobile */}
+          <h1 className="text-3xl sm:text-6xl font-serif italic text-[#4B2E05] mt-4 mb-4 sm:mt-6 sm:mb-6">
+            Le Blog Root.
+          </h1>
+          <p className="max-w-2xl mx-auto text-sm sm:text-base text-gray-700 italic px-2">
+            Conseils d'experts, bienfaits de nos <span className="text-[#357A32] font-semibold">Produits</span> et secrets de terroir.
           </p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        {/* Recherche et Filtres */}
-        <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-16">
+      <div className="max-w-7xl mx-auto px-6 py-8 sm:py-16">
+
+        {/* 2. Recherche et Filtres : Espacement réduit sur mobile */}
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-center justify-between mb-8 sm:mb-16">
+
+          {/* Barre de Recherche : pl-10 et py-3 pour gagner en finesse */}
           <div className="relative w-full lg:w-96 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#357A32] transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-700 group-focus-within:text-[#357A32] transition-colors" />
             <input
               type="text"
-              placeholder="Rechercher..."
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#357A32]/20 outline-none text-sm transition-all"
+              placeholder="Rechercher un article..."
+              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-[#357A32]/5 focus:border-[#357A32] outline-none text-sm transition-all shadow-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map(cat => (
-              <button
-                key={cat.value}
-                onClick={() => cat.value === 'all' ? setSearchParams({}) : setSearchParams({ category: cat.value })}
-                className={`px-5 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                  selectedCategory === cat.value ? "bg-[#4B2E05] text-white shadow-md" : "bg-transparent text-gray-400 hover:text-[#357A32]"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+
+          {/* 3. Filtres de Catégories : Optimisation du scroll horizontal */}
+          <div className="w-full lg:w-auto">
+            <div className="flex flex-row overflow-x-auto pb-4 sm:pb-0 scrollbar-hide gap-2 -mx-6 px-6 sm:mx-0 sm:px-0 sm:flex-wrap">
+              {categories.map(cat => (
+                <button
+                  key={cat.value}
+                  onClick={() => cat.value === 'all' ? setSearchParams({}) : setSearchParams({ category: cat.value })}
+                  className={`whitespace-nowrap px-5 py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all border ${selectedCategory === cat.value
+                      ? "bg-[#4B2E05] border-[#4B2E05] text-white shadow-md shadow-[#4B2E05]/20"
+                      : "bg-white border-gray-100 text-gray-500 active:bg-gray-50"
+                    }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Liste Articles */}
+        {/* Liste Articles */}
         {filteredPosts.length === 0 ? (
-          <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-            <p className="text-gray-400 font-serif italic">Aucun article trouvé.</p>
+          <div className="text-center py-16 sm:py-20 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 mx-4 sm:mx-0">
+            <AlertCircle className="w-10 h-10 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-700 font-serif italic">Aucun article ne correspond à votre recherche.</p>
           </div>
         ) : (
           <>
-            {selectedCategory === 'all' && !searchTerm && <FeaturedPost post={filteredPosts[0]} />}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {/* Featured Post : Affiché uniquement si aucun filtre n'est actif */}
+            {selectedCategory === 'all' && !searchTerm && (
+              <FeaturedPost post={filteredPosts[0]} />
+            )}
+
+            {/* Grille d'articles : gap réduit sur mobile (gap-8) pour gagner de la place */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
               {(selectedCategory === 'all' && !searchTerm ? filteredPosts.slice(1) : filteredPosts).map((post) => (
-                <article key={post._id} className="group flex flex-col">
-                  <div className="relative h-64 rounded-2xl overflow-hidden mb-6 bg-gray-100">
-                    <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded text-[9px] font-bold uppercase text-[#357A32]">
+                <article key={post._id} className="group flex flex-col bg-white">
+
+                  {/* Image : Hauteur adaptée (h-56) sur mobile pour ne pas trop étirer la page */}
+                  <div className="relative h-56 sm:h-64 rounded-2xl overflow-hidden mb-5 bg-gray-100">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    {/* Badge catégorie sur l'image */}
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded text-[9px] font-bold uppercase text-[#357A32] shadow-sm">
                         {post.category}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
-                    <Calendar className="w-3 h-3" /> {new Date(post.date).toLocaleDateString('fr-FR')}
+
+                  {/* Métadonnées (Date et Temps de lecture) */}
+                  <div className="flex items-center gap-3 text-[9px] font-bold tracking-widest text-gray-700 mb-3">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(post.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                    </div>
                     <span>•</span>
-                    <span>{post.readTime}</span>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {post.readTime}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-serif italic text-[#4B2E05] mb-4 group-hover:text-[#357A32] transition-colors leading-snug">
+
+                  {/* Titre : text-lg sur mobile pour une lecture plus douce */}
+                  <h3 className="text-lg sm:text-xl font-serif italic text-[#4B2E05] mb-3 group-hover:text-[#357A32] transition-colors leading-snug">
                     {post.title}
                   </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 font-light">
+
+                  {/* Extrait : text-sm sur mobile pour la légèreté */}
+                  <p className="text-sm text-gray-700 leading-relaxed mb-5 line-clamp-2">
                     {post.excerpt}
                   </p>
-                  <Link to={`/blog/${post._id}`} className="mt-auto text-[10px] font-bold text-[#357A32] uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all">
+
+                  {/* Lien "Lire l'article" avec micro-interaction */}
+                  <Link
+                    to={`/blog/${post._id}`}
+                    className="mt-auto text-[10px] font-bold text-[#357A32] uppercase tracking-[0.2em] flex items-center gap-2 group-hover:gap-3 transition-all"
+                  >
                     Lire l'article <ArrowRight className="w-3 h-3" />
                   </Link>
                 </article>
@@ -151,19 +217,7 @@ const Blog: React.FC = () => {
           </>
         )}
 
-        {/* Newsletter */}
-        <section className="mt-32 bg-[#4B2E05] rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-             <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
-          </div>
-          <Mail className="w-12 h-12 text-white/20 mx-auto mb-6" />
-          <h2 className="text-3xl font-serif italic text-white mb-4">Restez dans la confidence</h2>
-          <p className="text-white/60 mb-10 max-w-lg mx-auto font-light">Inscrivez-vous pour recevoir nos recettes exclusives et l'actualité de nos récoltes.</p>
-          <form className="max-w-md mx-auto flex flex-col md:flex-row gap-4">
-            <input type="email" placeholder="Votre email..." className="flex-1 px-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#357A32]/50 text-sm" />
-            <button className="bg-[#357A32] text-white px-8 py-4 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-white hover:text-[#4B2E05] transition-all">S'abonner</button>
-          </form>
-        </section>
+
       </div>
     </div>
   );

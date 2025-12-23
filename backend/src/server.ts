@@ -16,8 +16,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-    origin: 'http://localhost:5173', 
-    credentials: true, 
+    // Si on est en production sur Vercel, on autorise l'origine du site
+    // Sinon en local, on garde localhost
+    origin: process.env.NODE_ENV === 'production' 
+        ? "https://rootproductsvente.vercel.app" 
+        : "http://localhost:5173",
+    credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -48,6 +52,10 @@ app.get('/', (req: Request, res: Response) => {
     res.send('API est en cours d\'exécution...');
 });
 
-app.listen(port, () => {
-    console.log(`🚀 Le serveur est démarré sur http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => {
+        console.log(`🚀 Serveur local : http://localhost:${port}`);
+    });
+}
+
+export default app;

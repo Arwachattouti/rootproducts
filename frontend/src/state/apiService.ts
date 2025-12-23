@@ -6,7 +6,7 @@ import { Product, User, LoginCredentials, RegisterData, Order, BlogPost, AdminSt
 export const apiService = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:5000/api/',
+        baseUrl: '/api/',
         credentials: 'include', // Important pour les cookies JWT
     }),
 

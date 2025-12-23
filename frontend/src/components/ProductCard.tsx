@@ -30,11 +30,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     };
 
     return (
-        <Link to={`/product/${product._id}`} className="group block h-full">
-            <div className="flex flex-col h-full bg-white rounded-2xl overflow-hidden transition-all duration-500 border border-gray-100 hover:border-[#357A32]/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-                
+        <Link to={`/product/${product._id}`} className="group block ">
+            <div className="mt-1  flex flex-col  bg-white rounded-2xl overflow-hidden transition-all duration-500 border border-gray-100 hover:border-[#357A32]/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
                 {/* 1. Image & Badges */}
-                <div className="relative h-72 overflow-hidden bg-gray-50">
+                <div className="relative h-64 overflow-hidden bg-gray-50">
                     <img
                         src={product.images[0]}
                         alt={product.name}
@@ -67,54 +66,53 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
                 {/* 2. Contenu Texte */}
                 <div className="p-6 flex flex-col flex-grow">
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex justify-between items-start mt-1">
                         <span className="text-[10px] font-bold text-[#357A32] uppercase tracking-[0.15em]">
                             {product.category || "Terroir"}
                         </span>
                         <div className="flex items-center">
                             <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                            <span className="text-[11px] font-bold ml-1 text-gray-400">
+                            <span className="text-base ml-1 ">
                                 {product.rating}
                             </span>
                         </div>
                     </div>
 
-                    <h3 className="text-xl font-serif italic text-[#4B2E05] mb-2 line-clamp-1 group-hover:text-[#357A32] transition-colors">
+                    <h3 className=" text-2xl text-[#4B2E05] mb-2 line-clamp-1 group-hover:text-[#357A32] transition-colors">
                         {product.name}
                     </h3>
 
-                    <p className="text-gray-500 text-sm font-light line-clamp-2 mb-6 leading-relaxed">
+                    <p className=" h-12 text-base line-clamp-2 mb-6 leading-relaxed">
                         {product.description}
                     </p>
 
                     {/* 3. Prix & Action */}
-                    <div className="mt-auto flex items-center justify-between">
+                    <div className="mt-1 flex items-center justify-between">
                         <div className="flex flex-col">
                             {product.originalPrice && product.originalPrice > product.price && (
-                                <span className="text-xs text-gray-400 line-through mb-[-4px]">
-                                    {product.originalPrice.toFixed(2)} DT
+                                <span className="text-lg">
+                                    {product.originalPrice.toFixed(3)} DT
                                 </span>
                             )}
                             <span className="text-xl font-bold text-[#4B2E05]">
-                                {product.price.toFixed(2)} <span className="text-xs">DT</span>
+                                {product.price.toFixed(3)} <span className="text-lg">DT</span>
                             </span>
                         </div>
 
                         <button
                             onClick={handleAddToCart}
                             disabled={!isInStock || isAdding}
-                            className={`relative flex items-center justify-center h-12 w-12 rounded-xl transition-all duration-300 ${
-                                isInStock
+                            className={`relative flex items-center justify-center h-12 w-12 rounded-xl transition-all duration-300 ${isInStock
                                     ? 'bg-[#4B2E05] hover:bg-[#357A32] text-white shadow-md'
                                     : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                            }`}
+                                }`}
                         >
                             {isAdding ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
                             ) : (
                                 <ShoppingCart className="h-5 w-5" />
                             )}
-                            
+
                             {/* Petit indicateur de succès */}
                             {isSuccess && (
                                 <span className="absolute -top-1 -right-1 bg-[#357A32] text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white animate-ping">
@@ -124,13 +122,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     </div>
 
                     {/* 4. Détails Techniques (Plus discrets) */}
-                    <div className="mt-6 pt-4 border-t border-gray-50 flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                        <span>{product.weight} • {product.origin}</span>
-                        <div className="flex items-center gap-1">
+                    <div className="mt-2 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
+                        <div className=" tracking-tight">
+                            <span className="text-base">{product.weight}</span>
+                            <span className="mx-2 text-gray-300">•</span>
+                            <span>{product.origin}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-[#357A32] font-bold bg-green-50 px-2 py-0.5 rounded border border-green-100">
                             <div className="w-1.5 h-1.5 bg-[#357A32] rounded-full animate-pulse"></div>
-                            <span>Pur</span>
+                            <span className="text-[10px] uppercase"> Pur</span>
                         </div>
                     </div>
+
                 </div>
             </div>
         </Link>
