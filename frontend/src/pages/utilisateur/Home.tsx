@@ -159,7 +159,7 @@ const Home: React.FC = () => {
             <div className="lg:w-2/3 space-y-6 sm:space-y-8  text-base sm:text-lg leading-relaxed ">
               <p>
                 <span className="text-[#4B2E05] md:text-2xl font-seasons">ROOT Products</span> 
-                <span className=" font-seasons md:text-2xl">est un concept lancé en </span>
+                <span className=" font-seasons md:text-2xl"> est un concept lancé en </span>
                 <span className="text-[#357A32] font-seasons md:text-2xl">1986</span>
                 <span className=" font-seasons md:text-2xl"> , visant à valoriser les produits de terroir tunisiens et à préserver les traditions locales. La marque met en lumière le savoir-faire des producteurs artisans et des petits agriculteurs, en leur offrant visibilité et soutien pour développer une production de qualité.
                 </span> </p>
