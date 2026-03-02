@@ -26,13 +26,13 @@ const Products: React.FC = () => {
     }
   }, [products]);
 
- const categories = [
+  const categories = [
   { id: 'all', value: '', label: 'Toute la collection', icon: 'AllIcon' },
-    { id: 'saison', value: 'saison', label: 'Produits de Saison',description: 'Récoltes fraîches du moment'},
   { id: 'epices', value: ['condiments', 'sauce', 'poudre'], label: 'Épices & Condiments',description: 'Le cœur du goût tunisien'},
   { id: 'sucre', value: 'confiture', label: 'Douceurs & Confitures',description: 'Plaisirs sucrés naturels'},
   { id: 'essentiels', value: ['huile', 'miel'], label: 'Huiles & Miels',description: 'Or liquide et nectars du terroir'},
-   { id: 'cereales', value: 'grains', label: 'Céréales',description: 'Semoules et farines artisanales'},
+  { id: 'cereales', value: 'grains', label: 'Céréales',description: 'Semoules et farines artisanales'},
+  { id: 'saison', value: 'saison', label: 'Produits de Saison',description: 'Récoltes fraîches du moment'},
   { id: 'divers', value: 'divers', label: 'Divers',description: 'Autres trésors à découvrir'}
 ];
 

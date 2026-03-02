@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import logo from "../components/logo.png";
 import { Menu, X, ShoppingCart, User, ChevronDown, Search, Bell } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -7,7 +6,8 @@ import { useGetProductsQuery } from '../state/apiService';
 import { useGetCartQuery, useLogoutMutation } from '../state/apiService';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../state/slices/userSlice';
-
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 interface NavLink {
   name: string;
   path: string;
@@ -21,6 +21,9 @@ const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [language, setLanguage] = useState(window.appTranslate?.currentLanguage || 'fr');
+  const location = useLocation();
+
+const [searchParams, setSearchParams] = useSearchParams();
 
   const navigate = useNavigate();
   const { data: cartData } = useGetCartQuery();
@@ -31,7 +34,25 @@ const Header: React.FC = () => {
   const handleCartClick = () => {
     navigate('/panier');
   };
+  const [isProductsOpen, setIsProductsOpen] = useState(false);
   const { state } = useCart();
+  const categories = [
+    { id: 'all', value: '', label: 'Toute la collection', description: 'Découvrez l\'ensemble de nos trésors' },
+    { id: 'epices', value: ['condiments', 'sauce', 'poudre'], label: 'Épices & Condiments', description: 'Le cœur du goût tunisien' },
+    { id: 'sucre', value: 'confiture', label: 'Douceurs & Confitures', description: 'Plaisirs sucrés naturels' },
+    { id: 'essentiels', value: ['huile', 'miel'], label: 'Huiles & Miels', description: 'Or liquide et nectars du terroir' },
+    { id: 'cereales', value: 'grains', label: 'Céréales', description: 'Semoules et farines artisanales' },
+    { id: 'saison', value: 'saison', label: 'Produits de Saison', description: 'Récoltes fraîches du moment' },
+    { id: 'divers', value: 'divers', label: 'Divers', description: 'Autres trésors à découvrir' }
+  ];
+  const getCategoryParam = (value: string | string[]) =>
+    Array.isArray(value) ? value.join(',') : value;
+
+const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+
+useEffect(() => {
+  setSelectedCategory(searchParams.get('category') || '');
+}, [searchParams]); // ← ça permet de réagir aux changements de query params
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -46,6 +67,23 @@ const Header: React.FC = () => {
     }, 1000);
     return () => clearInterval(checkLang);
   }, [language]);
+
+const goToProductsCategory = (value: string | string[]) => {
+  const categoryParam = Array.isArray(value) ? value.join('%2C') : value;
+
+  // Construit l'URL complète vers /products
+  const url = categoryParam
+    ? `/products?category=${categoryParam}`
+    : `/products?_=${Date.now()}`;
+
+  navigate(url);
+
+  setIsMenuOpen(false);
+  setIsProductsOpen(false);
+};
+
+
+
 
   const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newLanguage = event.target.value;
@@ -86,13 +124,11 @@ const Header: React.FC = () => {
       <img
         src={logo}
         alt="ROOT Products Logo"
-        className="h-14 sm:h-20 md:h-20 w-auto object-contain"
+        className="h-16 sm:h-20 md:h-20 w-auto object-contain"
       />
     </div>
   );
-  const navLinks: NavLink[] = [
-    { name: 'Accueil', path: '/' },
-    { name: 'Nos produits', path: '/products' },
+  const navLinksAfter: NavLink[] = [
     { name: 'Blog/Conseils', path: '/blog' },
     { name: 'Contact', path: '/contact' },
   ];
@@ -102,6 +138,7 @@ const Header: React.FC = () => {
       className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-lg h-24" : "bg-transparent h-24"
         }`}
     >
+      
       <div className="max-w-full mx-auto px-4 lg:px-8">
         <div className="flex justify-between items-center h-24">
 
@@ -111,16 +148,58 @@ const Header: React.FC = () => {
           </Link>
 
           {/* ===== NAVIGATION DESKTOP (Inchangée) ===== */}
+          {/* ===== NAVIGATION DESKTOP ===== */}
           <nav className="hidden lg:flex space-x-6 items-center">
-            {navLinks.map((link) => (
+
+            {/* 1. LIEN ACCUEIL */}
+            <Link
+              to="/"
+              className="relative font-seasons text-[#4B2E05] hover:text-[#357A32] px-2 py-2 text-2xl font-medium transition-colors duration-300 after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-[#357A32] after:transition-all after:duration-300 hover:after:w-full"
+            >
+              Accueil
+            </Link>
+
+            {/* 2. NOS PRODUITS AVEC DROPDOWN */}
+            <div className="relative group">
+              <Link
+                to="/products"
+                className="flex items-center font-seasons text-[#4B2E05] group-hover:text-[#357A32] text-2xl transition-colors py-2"
+              >
+                Nos produits
+                <ChevronDown className="ml-1 h-5 w-5 transition-transform group-hover:rotate-180" />
+              </Link>
+
+              {/* Menu déroulant */}
+              <div className="absolute left-0 mt-0 w-[500px] bg-white shadow-2xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-gray-100 p-4 z-50 grid grid-cols-2 gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => goToProductsCategory(cat.value)}
+                    className="flex flex-col p-3 rounded-lg hover:bg-[#F5F2EA] transition-colors text-left"
+                  >
+                    <span className="font-seasons text-[#4B2E05] text-lg font-bold">
+                      {cat.label}
+                    </span>
+                    <span className="text-[10px] text-gray-500 font-seasons leading-tight">
+                      {cat.description}
+                    </span>
+                  </button>
+
+                ))}
+              </div>
+            </div>
+
+            {/* 3. AUTRES LIENS (Blog, Contact) */}
+            {navLinksAfter.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="relative font-seasons  text-[#4B2E05] hover:text-[#357A32] px-2 py-2 text-2xl font-medium transition-colors duration-300 after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-[#357A32] after:transition-all after:duration-300 hover:after:w-full"
+                className="relative font-seasons text-[#4B2E05] hover:text-[#357A32] px-2 py-2 text-2xl font-medium transition-colors duration-300 after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-[#357A32] after:transition-all after:duration-300 hover:after:w-full"
               >
                 {link.name}
               </Link>
             ))}
+
           </nav>
 
           {/* ===== ACTIONS DROITE (Search, Lang, Cart, User/Menu) ===== */}
@@ -251,9 +330,47 @@ const Header: React.FC = () => {
                 </button>
               </form>
 
-              {/* Navigation Principale - Texte réduit et bordures plus discrètes */}
               <nav className="mb-6">
-                {navLinks.map((link) => (
+                {/* 1. LIEN ACCUEIL */}
+                <Link
+                  to="/"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-between text-lg font-seasons text-[#4B2E05] py-3 border-b border-gray-50 active:bg-gray-50"
+                >
+                  Accueil
+                </Link>
+
+                {/* 2. SECTION NOS PRODUITS (Mobile Accordéon) */}
+                <div className="border-b border-gray-50">
+                  <button
+                    onClick={() => setIsProductsOpen(!isProductsOpen)}
+                    className="flex items-center justify-between w-full text-lg font-seasons text-[#4B2E05] py-3 outline-none"
+                  >
+                    <span>Nos produits</span>
+                    <ChevronDown
+                      className={`h-5 w-5 transition-transform duration-300 ${isProductsOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  {/* Liste conditionnelle avec transition fluide */}
+                  <div className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${isProductsOpen ? "max-h-96 opacity-100 pb-4" : "max-h-0 opacity-0"}`}>
+                    <div className="flex flex-col space-y-3 pt-2">
+                      {categories.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => goToProductsCategory(cat.value)}
+                          className="text-base text-left font-seasons text-[#4B2E05]/70 hover:text-[#357A32]"
+                        >
+                          {cat.label}
+                        </button>
+                      ))}
+
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. AUTRES LIENS (Blog, Contact) via le map */}
+                {navLinksAfter.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
@@ -284,7 +401,7 @@ const Header: React.FC = () => {
             </div>
 
             {/* Footer du Menu - Compact et fixe en bas */}
-            <div className="mt-auto border-t border-gray-100 bg-gray-50/80 p-4">
+            <div className=" border-t border-gray-100 bg-gray-50/80 p-4">
               {authState.isAuthenticated ? (
                 <div className="flex flex-col gap-2">
                   {/* Info utilisateur compacte */}
@@ -302,7 +419,7 @@ const Header: React.FC = () => {
                     <Link to="/account" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center bg-white border border-gray-100 py-2 rounded-lg text-xs font-bold text-gray-700">
                       Profil
                     </Link>
-                          {authState.user?.role === 'admin' && (
+                    {authState.user?.role === 'admin' && (
 
                       <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center text-purple-600 font-medium py-2"><div className="h-5 w-5 mr-3 bg-gradient-to-r from-purple-500 font-seasons to-pink-500 rounded-sm"></div> Admin</Link>
 

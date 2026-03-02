@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               {[
                 { name: 'Accueil', path: '/' },
-                { name: 'Nos Produits', path: '/products' },
+                { name: 'Nos produits', path: '/products' },
                 { name: 'Blog/Conseils', path: '/blog' },
                 { name: 'Contact', path: '/contact' }
               ].map((link) => (
@@ -91,6 +91,11 @@ const Footer: React.FC = () => {
               Informations
             </h3>
             <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/about" className="hover:text-[#C8AD7F] md:text-xl transition-colors font-seasons underline-offset-4 hover:underline">
+                  Notre histoire
+                </Link>
+              </li>
               <li>
                 <Link to="/legal" className="hover:text-[#C8AD7F] md:text-xl transition-colors font-seasons underline-offset-4 hover:underline">
                   Mentions légales

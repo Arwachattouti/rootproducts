@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import ProductCard from '../../components/ProductCard';
 import { useGetProductsQuery } from '../../state/apiService';
+import { useRef, useEffect } from "react";
 
 const Home: React.FC = () => {
 
@@ -15,8 +16,35 @@ const Home: React.FC = () => {
     isLoading,
     error
   } = useGetProductsQuery();
-  const featuredProducts = products.slice(0, 3);
-  const renderFeaturedProducts = () => {
+  const featuredProducts = products.slice(0, 8);
+  const renderFeaturedProductsSaison = () => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Scroll automatique sur mobile
+    useEffect(() => {
+      const container = scrollRef.current;
+      if (!container || featuredProducts.length === 0) return;
+
+      let scrollAmount = 0;
+      const gap = 12; // gap-3 en pixels
+      const firstCard = container.firstChild as HTMLElement;
+      if (!firstCard) return;
+      const cardWidth = firstCard.offsetWidth + gap;
+
+      const interval = setInterval(() => {
+        if (scrollAmount + container.offsetWidth >= container.scrollWidth) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+          scrollAmount = 0;
+        } else {
+          scrollAmount += cardWidth;
+          container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }, [featuredProducts]);
+
+    // Gestion des états
     if (isLoading) {
       return (
         <div className="flex justify-center items-center py-10">
@@ -27,7 +55,8 @@ const Home: React.FC = () => {
     }
 
     if (error) {
-      const errorMessage = (error as any)?.data?.message || 'Erreur lors du chargement des produits phares.';
+      const errorMessage =
+        (error as any)?.data?.message || 'Erreur lors du chargement des produits phares.';
       return (
         <div className="flex justify-center items-center py-10 text-red-600">
           <AlertCircle className="h-6 w-6 mr-2" />
@@ -35,25 +64,117 @@ const Home: React.FC = () => {
         </div>
       );
     }
+
     if (featuredProducts.length === 0) {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">Aucun produit phare disponible pour le moment.</p>
+          <p className="text-gray-500 text-lg">
+            Aucun produit phare disponible pour le moment.
+          </p>
         </div>
       );
     }
+
+    // Rendu des produits
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {featuredProducts.map((product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
+      <div className="relative w-full">
+        {/* Scroll horizontal sur mobile, grid sur desktop */}
+        <div
+          ref={scrollRef}
+          className="flex flex-nowrap overflow-x-auto gap-3 pb-8 scrollbar-hide snap-x snap-mandatory px-4 scroll-smooth md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-4 md:overflow-x-hidden md:px-0"
+        >
+          {featuredProducts.map((product) => (
+            <div
+              key={product._id}
+              className="snap-start flex-shrink-0 w-[calc(120%-0.75rem)] md:w-full h-full "
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
       </div>
     );
   };
+  const renderFeaturedProductsEquitables = () => {
+    const scrollRef = useRef<HTMLDivElement>(null);
 
+    // Scroll automatique sur mobile
+    useEffect(() => {
+      const container = scrollRef.current;
+      if (!container || featuredProducts.length === 0) return;
+
+      let scrollAmount = 0;
+      const gap = 12; // gap-3 en pixels
+      const firstCard = container.firstChild as HTMLElement;
+      if (!firstCard) return;
+      const cardWidth = firstCard.offsetWidth + gap;
+
+      const interval = setInterval(() => {
+        if (scrollAmount + container.offsetWidth >= container.scrollWidth) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+          scrollAmount = 0;
+        } else {
+          scrollAmount += cardWidth;
+          container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }, [featuredProducts]);
+
+    // Gestion des états
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center py-10">
+          <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+          <p className="ml-3 text-lg text-gray-600">Chargement des produits phares...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      const errorMessage =
+        (error as any)?.data?.message || 'Erreur lors du chargement des produits phares.';
+      return (
+        <div className="flex justify-center items-center py-10 text-red-600">
+          <AlertCircle className="h-6 w-6 mr-2" />
+          <p className="ml-2">{errorMessage}</p>
+        </div>
+      );
+    }
+
+    if (featuredProducts.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">
+            Aucun produit phare disponible pour le moment.
+          </p>
+        </div>
+      );
+    }
+
+    // Rendu des produits
+    return (
+      <div className="relative w-full">
+        {/* Scroll horizontal sur mobile, grid sur desktop */}
+        <div
+          ref={scrollRef}
+          className="flex flex-nowrap overflow-x-auto gap-3 pb-8 scrollbar-hide snap-x snap-mandatory px-4 scroll-smooth md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-4 md:overflow-x-hidden md:px-0"
+        >
+          {featuredProducts.map((product) => (
+            <div
+              key={product._id}
+              className="snap-start flex-shrink-0 w-[calc(120%-0.75rem)] md:w-full h-full"
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="min-h-screen bg-white">
-
       {/* 1. Hero Section */}
       {/* La hauteur (h) est maintenant dynamique pour coller à l'image sans vide en bas */}
       <section className="relative w-full bg-[#f4f1ea]">
@@ -106,29 +227,61 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-
-
       {/* 3. Featured Products Section */}
       <section className="py-10 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
           {/* Titre réduit sur mobile (text-2xl) */}
-          <h2 className="text-3xl md:text-5xl font-seasons text-[#4B2E05] mb-2 md:mb-4">
-            Nos produits phares
+          <h2 className="text-3xl md:text-5xl font-seasons text-[#4B2E05] mb-6 md:mb-4">
+           Nos produits
           </h2>
 
-          {/* Paragraphe plus petit et marge réduite */}
+          {/* Paragraphe plus petit et marge réduite 
           <p className="text-base font-seasons md:text-2xl mb-6 md:mb-12 text-gray-800">
             Découvrez nos best-sellers sélectionnés pour vous.
-          </p>
+          </p>*/}
 
           {/* Le rendu des produits (assure-toi que renderFeaturedProducts utilise une grille responsive) */}
-          <div className="min-h-[200px]">
-            {renderFeaturedProducts()}
+          {/* Rendu des produits avec grille responsive */}
+          <div>
+            {renderFeaturedProductsSaison()}
           </div>
 
+
           {/* Lien de bas de section plus compact */}
-          <div className="mt-8 md:mt-12">
+          <div className="md:mt-12">
+            <Link
+              to="/products"
+              className="inline-flex font-seasons items-center text-sm md:text-2xl text-black hover:text-[#357A32] transition-colors"
+            >
+              Voir tous les produits <ArrowRight className="ml-1.5 h-4 w-4 md:h-5 md:w-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-10 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+          {/* Titre réduit sur mobile (text-2xl) */}
+          <h2 className="text-3xl md:text-5xl font-seasons text-[#4B2E05] mb-6 md:mb-4">
+            Produits équitables 
+          </h2>
+
+          {/* Paragraphe plus petit et marge réduite 
+          <p className="text-base font-seasons md:text-2xl mb-6 md:mb-12 text-gray-800">
+            Découvrez nos best-sellers sélectionnés pour vous.
+          </p>*/}
+
+          {/* Le rendu des produits (assure-toi que renderFeaturedProducts utilise une grille responsive) */}
+          {/* Rendu des produits avec grille responsive */}
+          <div>
+            {renderFeaturedProductsEquitables()}
+          </div>
+
+
+          {/* Lien de bas de section plus compact */}
+          <div className="md:mt-12">
             <Link
               to="/products"
               className="inline-flex font-seasons items-center text-sm md:text-2xl text-black hover:text-[#357A32] transition-colors"
@@ -158,7 +311,7 @@ const Home: React.FC = () => {
             {/* Texte principal - Taille de police ajustée pour le confort mobile */}
             <div className="lg:w-2/3 space-y-6 sm:space-y-8  text-base sm:text-lg leading-relaxed ">
               <p>
-                <span className="text-[#4B2E05] md:text-2xl font-seasons">ROOT Products</span> 
+                <span className="text-[#4B2E05] md:text-2xl font-seasons">ROOT Products</span>
                 <span className=" font-seasons md:text-2xl">est un concept lancé en </span>
                 <span className="text-[#357A32] font-seasons md:text-2xl">1986</span>
                 <span className=" font-seasons md:text-2xl"> , visant à valoriser les produits de terroir tunisiens et à préserver les traditions locales. La marque met en lumière le savoir-faire des producteurs artisans et des petits agriculteurs, en leur offrant visibilité et soutien pour développer une production de qualité.
@@ -207,14 +360,13 @@ const Home: React.FC = () => {
               <p className='font-seasons  md:text-xl'>Valoriser le travail local et contribuer au développement du terroir tunisien.</p>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <Eye className="h-10 w-10 text-purple-600 mx-auto mb-4  "/>
+              <Eye className="h-10 w-10 text-purple-600 mx-auto mb-4  " />
               <h3 className="text-xl font-seasons text-gray-900 mb-2 md:text-3xl">Transparence</h3>
               <p className='font-seasons md:text-xl'>Un processus clair et responsable de la terre jusqu'à votre table.</p>
             </div>
           </div>
         </div>
       </section>
-
       {/* 5. Témoignages Section */}
       <section className="py-6 sm:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4  sm:px-6 lg:px-8">
@@ -263,16 +415,13 @@ const Home: React.FC = () => {
                 </div>
                 <p className="text-sm font-seasons text-gray-500 ml-3">Il y a 1 semaine</p>
               </div>
-                 <div className="mb-4">
-              <div className="font-seasons text-gray-900">Leila H.</div></div>
+              <div className="mb-4">
+                <div className="font-seasons text-gray-900">Leila H.</div></div>
               <p className='font-seasons  md:text-xl'>"Mes enfants adorent ! Enfin une mloukhia de qualité premium accessible."</p>
             </div>
           </div>
         </div>
       </section>
-
-
-
     </div>
   );
 };
