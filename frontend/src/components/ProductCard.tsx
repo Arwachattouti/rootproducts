@@ -12,7 +12,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const navigate = useNavigate();
     const isInStock = product.countInStock > 0;
     const [updateCart, { isLoading: isAdding, isSuccess }] = useUpdateCartMutation();
-
+const discountPercentage = product.originalPrice && product.originalPrice > product.price
+  ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  : 0;
     const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -40,7 +42,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-
+{discountPercentage > 0 && (
+    <div className="absolute top-2 right-2 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-md">
+      -{discountPercentage}%
+    </div>
+  )}
                 {/* Badge Promo */}
                 {product.originalPrice && product.originalPrice > product.price && (
                     <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-[#4B2E05] text-white px-2 py-0.5 md:px-3 md:py-1 rounded-lg text-[8px] md:text-[10px] font-bold tracking-widest uppercase shadow-xl">

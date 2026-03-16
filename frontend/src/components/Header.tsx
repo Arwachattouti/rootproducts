@@ -82,9 +82,6 @@ const goToProductsCategory = (value: string | string[]) => {
   setIsProductsOpen(false);
 };
 
-
-
-
   const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newLanguage = event.target.value;
     setLanguage(newLanguage);
@@ -130,6 +127,7 @@ const goToProductsCategory = (value: string | string[]) => {
   );
   const navLinksAfter: NavLink[] = [
     { name: 'Blog/Conseils', path: '/blog' },
+     { name: 'Carte', path: '/carte' },
     { name: 'Contact', path: '/contact' },
   ];
 

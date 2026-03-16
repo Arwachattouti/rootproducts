@@ -1,10 +1,9 @@
 // components/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  MapPin, Phone, Mail,
-  Facebook, Instagram, Youtube,
+import {MapPin, Phone, Mail,Facebook, Instagram, 
 } from 'lucide-react';
+import { FaTiktok } from "react-icons/fa";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -90,14 +89,14 @@ const Footer: React.FC = () => {
                   "
                 />
                 <a
-                  href="mailto:contact@rootproducts.tn"
+                  href="mailto:contact@joudhoor.tn"
                   className="
                     font-seasons hover:text-white transition-colors
                     break-all
                     text-[10px] sm:text-sm md:text-base lg:text-xl
                   "
                 >
-                  contact@rootproducts.tn
+                  contact@joudhoor.tn
                 </a>
               </li>
             </ul>
@@ -163,8 +162,8 @@ const Footer: React.FC = () => {
             <div className="flex space-x-3 sm:space-x-4">
               {[
                 { icon: <Facebook />, url: '#', color: 'hover:bg-blue-600' },
-                { icon: <Instagram />, url: '#', color: 'hover:bg-pink-600' },
-                { icon: <Youtube />, url: '#', color: 'hover:bg-red-600' },
+                { icon: <Instagram />, url: 'https://www.instagram.com/root_history/', color: 'hover:bg-pink-600' },
+             { icon: < FaTiktok  />, url: '#', color: 'hover:bg-red-600' },
               ].map((social, idx) => (
                 <a
                   key={idx}

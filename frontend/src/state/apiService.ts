@@ -5,9 +5,11 @@ import { Product, User, LoginCredentials, RegisterData, Order, BlogPost, AdminSt
 
 export const apiService = createApi({
     reducerPath: 'api',
+     // Si on est en production sur Vercel, on autorise l'origine du site
+    // Sinon en local, on garde localhost
     baseQuery: fetchBaseQuery({
-         //  baseUrl: 'http://localhost:5000/api/',
-        baseUrl: '/api/',
+      //   baseUrl: 'http://localhost:5000/api/',
+          baseUrl: '/api/',
         credentials: 'include',
     }),
     tagTypes: ['Product', 'User', 'Order', 'Cart', 'Blog'],
@@ -226,9 +228,7 @@ export const apiService = createApi({
             invalidatesTags: (result, error, { id }) => ['Order', { type: 'Order', id }],
         }),
 
-        // Dans votre apiService.ts existant
         getAdminStats: builder.query<AdminStats, string>({
-            // On passe le paramètre 'range' (7d, 30d, etc.) à l'URL si votre backend le supporte
             query: (range) => `orders/stats?range=${range}`,
             providesTags: ['Order', 'Product', 'User'],
         }),
@@ -248,7 +248,7 @@ export const {
     useUpdateProfileMutation,
     useGetAllUsersQuery,
     useUpdateUserMutation,
-  useDeleteUserMutation,
+    useDeleteUserMutation,
     useGetProductsQuery,
     useGetProductDetailsQuery,
     useCreateProductMutation,

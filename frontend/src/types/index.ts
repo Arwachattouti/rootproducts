@@ -17,6 +17,10 @@ export interface Product {
   ingredients: string[];
   benefits: string[];
   origin: string;
+  location: {
+  latitude: number;
+  longitude: number;
+}
   rating: number;
   reviewCount: number;
 }
@@ -38,22 +42,22 @@ export interface Customer {
     country: string;
   };
 }
-// --- Interface Blog (Nouveau) ---
+
 export interface BlogPost {
   _id: string;
   title: string;
   category: 'Nutrition' | 'Culture' | 'Jardinage' | 'Cuisine' | 'Technique';
   author: string;
-  date: string; // Format ISO string
+  date: string;
   readTime: string;
   image: string;
   excerpt: string;
-  content?: string; // Pour la page détail de l'article
+  content?: string; 
   tags: string[];
 }
 export interface Order {
   id: string;
-  customer: Customer;
+  user: string;
   items: CartItem[];
   total: number;
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered';
@@ -64,7 +68,7 @@ export interface Order {
 }
 
 export interface User {
- id?: string;      // Optionnel pour la compatibilité frontend
+ id?: string;    
   _id?: string;
   email: string;
   password: string;
@@ -107,13 +111,13 @@ export interface AdminStats {
   totalOrders: number;
   totalCustomers: number;
   totalProducts: number;
-  newUsersCount: number; // Ajouté pour correspondre au contrôleur
+  newUsersCount: number; 
   recentOrders: {
     id: string;
     user: {
       name: string;
     };
-    createdAt: string; // ISO Date string renvoyée par MongoDB
+    createdAt: string; 
     total: number;
     status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   }[];

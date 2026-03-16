@@ -19,10 +19,13 @@ import paymeeOrderSuccess from '../pages/utilisateur/paymeeOrderSuccess';
 import About from '../pages/utilisateur/About';
 import Contact from '../pages/utilisateur/Contact';
 
+
+import Carte from '../pages/utilisateur/Carte';
+
 import Blog from '../pages/utilisateur/Blog';
 import BlogDetail from '../pages/utilisateur/BlogDetail'; 
 import Account from '../pages/utilisateur/Account';
-import Legal from '../pages/utilisateur/legal';
+import Legal from '../pages/utilisateur/Legal';
 import Privacy from '../pages/utilisateur/Privacy';
 import Terms from '../pages/utilisateur/Terms';
 import Login from '../pages/authentification/Login';
@@ -41,7 +44,6 @@ const AppRoutes = () => {
         {/* Public routes hors layout principal */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
         {/* Admin routes */}
         <Route path="/admin" element={
           <ProtectedRoute requireAdmin>
@@ -66,6 +68,7 @@ const AppRoutes = () => {
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/panier" element={<Panier />} />
+                <Route path="/carte" element={<Carte />} />
                 <Route path="/paiement" element={
                   <ProtectedRoute>
                     <Paiement />
