@@ -3,7 +3,34 @@ import {
   Search, Eye, Download, Loader2, X
 } from 'lucide-react';
 import { useGetAllOrdersQuery, useUpdateOrderStatusMutation } from '../../state/apiService';
-import { Order } from '../../types';
+
+// On utilise une interface locale adaptée à ce que le backend renvoie exactement
+interface OrderItem {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface Order {
+  _id: string;
+  id?: string;
+  createdAt: string;
+  total: number;
+  status: string;
+  items: OrderItem[];
+  user?: {
+    name?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+  shippingAddress: {
+    street: string; // <-- Modifié : street au lieu de address
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+}
 
 const AdminOrders: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,15 +43,20 @@ const AdminOrders: React.FC = () => {
 
   // FILTRAGE
   const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
+    return (orders as Order[] ).filter((order ) => {
       const search = searchTerm.toLowerCase().trim();
-      const rawId = (order as any)._id || (order as any).id || '';
+      const rawId = order._id || order.id || '';
       const orderId = String(rawId).toLowerCase();
-      const userName = order.user?.name ? String(order.user.name).toLowerCase() : '';
+      
+      const userName = order.user?.name || order.user?.firstName || '';
+      const userNameLower = String(userName).toLowerCase();
+      
       const userEmail = order.user?.email ? String(order.user.email).toLowerCase() : '';
+      
       const matchesSearch =
-        orderId.includes(search) || userName.includes(search) || userEmail.includes(search);
+        orderId.includes(search) || userNameLower.includes(search) || userEmail.includes(search);
       const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+      
       return matchesSearch && matchesStatus;
     });
   }, [orders, searchTerm, statusFilter]);
@@ -54,7 +86,8 @@ const AdminOrders: React.FC = () => {
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     try {
       await updateStatus({ id: orderId, status: newStatus }).unwrap();
-      setShowModal(false);
+      // On met aussi à jour l'ordre sélectionné dans le modal pour voir le changement en direct
+      setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
     } catch (err) {
       alert('Erreur lors de la mise à jour du statut');
     }
@@ -64,18 +97,19 @@ const AdminOrders: React.FC = () => {
     const csvContent = [
       ['ID', 'Client', 'Total', 'Statut', 'Date'].join(','),
       ...filteredOrders.map((o) => {
-        const oId = (o as any)._id || (o as any).id || '';
+        const oId = o._id || o.id || '';
+        const clientName = o.user?.name || o.user?.firstName || 'Client Inconnu';
         return [
           oId,
-          o.user?.name || 'Inconnu',
-          o.total.toFixed(2),
+          clientName,
+          o.total?.toFixed(2) || '0.00',
           o.status,
           new Date(o.createdAt).toLocaleDateString(),
         ].join(',');
       }),
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -161,7 +195,7 @@ const AdminOrders: React.FC = () => {
             </div>
           ) : (
             filteredOrders.map((order) => {
-              const orderUniqueId = (order as any)._id || (order as any).id;
+              const orderUniqueId = order._id || order.id;
               return (
                 <div
                   key={orderUniqueId}
@@ -189,7 +223,7 @@ const AdminOrders: React.FC = () => {
                   {/* Client info */}
                   <div className="mb-3 pl-0.5">
                     <p className="font-bold text-sm text-gray-900 truncate">
-                      {order.user?.name || 'Client Invité'}
+                      {order.user?.name || order.user?.firstName || 'Client Invité'}
                     </p>
                     <p className="text-xs text-gray-400 truncate">
                       {order.user?.email || "Pas d'email"}
@@ -199,7 +233,7 @@ const AdminOrders: React.FC = () => {
                   {/* Bottom: Total + Action */}
                   <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                     <p className="font-black text-base text-gray-900">
-                      {order.total.toFixed(2)} DT
+                      {order.total?.toFixed(2)} DT
                     </p>
                     <button
                       onClick={() => {
@@ -246,7 +280,7 @@ const AdminOrders: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filteredOrders.map((order) => {
-                  const orderUniqueId = (order as any)._id || (order as any).id;
+                  const orderUniqueId = order._id || order.id;
                   return (
                     <tr
                       key={orderUniqueId}
@@ -262,14 +296,14 @@ const AdminOrders: React.FC = () => {
                       </td>
                       <td className="px-6 xl:px-8 py-5 lg:py-6">
                         <p className="font-bold text-sm text-gray-900 truncate max-w-[200px]">
-                          {order.user?.name || 'Client Invité'}
+                          {order.user?.name || order.user?.firstName || 'Client Invité'}
                         </p>
                         <p className="text-xs text-gray-400 truncate max-w-[200px]">
                           {order.user?.email || "Pas d'email"}
                         </p>
                       </td>
                       <td className="px-6 xl:px-8 py-5 lg:py-6 font-black text-gray-900 whitespace-nowrap">
-                        {order.total.toFixed(2)} DT
+                        {order.total?.toFixed(2)} DT
                       </td>
                       <td className="px-6 xl:px-8 py-5 lg:py-6">
                         <span
@@ -319,11 +353,7 @@ const AdminOrders: React.FC = () => {
             <div className="p-4 sm:p-6 lg:p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 flex-shrink-0">
               <h2 className="text-base sm:text-lg lg:text-xl font-black uppercase italic tracking-tighter truncate pr-4">
                 Commande #
-                {String(
-                  (selectedOrder as any)._id || (selectedOrder as any).id
-                )
-                  .slice(-6)
-                  .toUpperCase()}
+                {String(selectedOrder._id || selectedOrder.id).slice(-6).toUpperCase()}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -343,14 +373,15 @@ const AdminOrders: React.FC = () => {
                 </p>
                 <div className="p-4 sm:p-5 lg:p-6 bg-gray-50 rounded-xl sm:rounded-2xl lg:rounded-[2rem] border border-gray-100">
                   <p className="font-bold text-sm text-gray-900">
-                    {selectedOrder.shippingAddress.address}
+                    {/* CORRECTION: street au lieu de address */}
+                    {selectedOrder.shippingAddress?.street || 'Adresse non renseignée'}
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-                    {selectedOrder.shippingAddress.city},{' '}
-                    {selectedOrder.shippingAddress.postalCode}
+                    {selectedOrder.shippingAddress?.city},{' '}
+                    {selectedOrder.shippingAddress?.postalCode}
                   </p>
                   <p className="text-xs sm:text-sm text-green-600 uppercase font-bold mt-1">
-                    {selectedOrder.shippingAddress.country}
+                    {selectedOrder.shippingAddress?.country}
                   </p>
                 </div>
               </div>
@@ -361,7 +392,7 @@ const AdminOrders: React.FC = () => {
                   Articles commandés
                 </p>
                 <div className="space-y-2 sm:space-y-3">
-                  {selectedOrder.items.map((item, idx) => (
+                  {selectedOrder.items?.map((item, idx) => (
                     <div
                       key={idx}
                       className="flex justify-between items-center p-3 sm:p-4 bg-white border border-gray-100 rounded-xl sm:rounded-2xl gap-3"
@@ -375,12 +406,12 @@ const AdminOrders: React.FC = () => {
                             {item.name}
                           </p>
                           <p className="text-[10px] sm:text-xs text-gray-400 font-bold">
-                            {item.price.toFixed(2)} DT / unité
+                            {item.price?.toFixed(2)} DT / unité
                           </p>
                         </div>
                       </div>
                       <p className="font-black text-xs sm:text-sm whitespace-nowrap flex-shrink-0">
-                        {(item.price * item.quantity).toFixed(2)} DT
+                        {(item.price * item.quantity)?.toFixed(2)} DT
                       </p>
                     </div>
                   ))}
@@ -392,7 +423,7 @@ const AdminOrders: React.FC = () => {
                     Total
                   </span>
                   <span className="text-base sm:text-lg font-black text-green-700">
-                    {selectedOrder.total.toFixed(2)} DT
+                    {selectedOrder.total?.toFixed(2)} DT
                   </span>
                 </div>
               </div>
@@ -409,10 +440,7 @@ const AdminOrders: React.FC = () => {
                         key={status}
                         disabled={isUpdating}
                         onClick={() =>
-                          handleStatusUpdate(
-                            (selectedOrder as any)._id || (selectedOrder as any).id,
-                            status
-                          )
+                          handleStatusUpdate(selectedOrder._id || selectedOrder.id || '', status)
                         }
                         className={`py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-[8px] sm:text-[9px] font-black uppercase transition-all shadow-sm ${
                           selectedOrder.status === status

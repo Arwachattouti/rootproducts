@@ -87,7 +87,17 @@ const AdminProducts: React.FC = () => {
   const openModal = (product?: Product) => {
     if (product) {
       setEditingProduct(product);
-      setFormData({ ...product });
+
+      // VÉRIFICATION : S'assurer que la catégorie du produit existe dans vos options
+      const allowedCategories = categories.map(c => c.value);
+      const safeCategory = allowedCategories.includes(product.category)
+        ? product.category
+        : 'poudre'; // Valeur par défaut si l'ancienne catégorie est invalide
+
+      setFormData({
+        ...product,
+        category: safeCategory
+      });
     } else {
       setEditingProduct(null);
       setFormData({
@@ -103,23 +113,27 @@ const AdminProducts: React.FC = () => {
     }
     setShowModal(true);
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // 1. On retire les champs générés par MongoDB pour ne pas polluer le PUT
+      const { _id, __v, createdAt, updatedAt, ...cleanData } = formData as any;
+
       if (editingProduct) {
-        await updateProduct({ id: editingProduct._id, ...formData }).unwrap();
+        await updateProduct({ id: editingProduct._id, ...cleanData }).unwrap();
         setMessage({ type: 'success', text: 'Produit mis à jour' });
       } else {
-        await createProduct(formData).unwrap();
+        await createProduct(cleanData).unwrap();
         setMessage({ type: 'success', text: 'Produit créé avec succès' });
       }
       setShowModal(false);
     } catch (err: any) {
-      setMessage({ type: 'error', text: 'Erreur de traitement' });
+      console.error("Erreur détaillée :", err);
+      // Afficher le message d'erreur réel du backend s'il existe
+      const errorMsg = err?.data?.message || 'Erreur de traitement';
+      setMessage({ type: 'error', text: errorMsg });
     }
   };
-
   const handleDelete = async (id: string) => {
     if (window.confirm('Supprimer ce produit définitivement ?')) {
       try {
@@ -184,9 +198,8 @@ const AdminProducts: React.FC = () => {
         {/* ════════ Toast ════════ */}
         {message && (
           <div
-            className={`fixed top-3 left-3 right-3 sm:top-6 sm:right-6 sm:left-auto z-[100] flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-top duration-300 ${
-              message.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
-            }`}
+            className={`fixed top-3 left-3 right-3 sm:top-6 sm:right-6 sm:left-auto z-[100] flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-top duration-300 ${message.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+              }`}
           >
             {message.type === 'success' ? (
               <CheckCircle2 className="mr-2 flex-shrink-0" size={16} />
@@ -372,9 +385,8 @@ const AdminProducts: React.FC = () => {
                   </span>
                   <div className="flex items-center gap-3">
                     <span
-                      className={`text-xs font-black ${
-                        product.countInStock < 10 ? 'text-rose-600' : 'text-emerald-600'
-                      }`}
+                      className={`text-xs font-black ${product.countInStock < 10 ? 'text-rose-600' : 'text-emerald-600'
+                        }`}
                     >
                       {product.countInStock} PCS
                     </span>
@@ -401,7 +413,8 @@ const AdminProducts: React.FC = () => {
                   <th className="px-4 lg:px-8 py-4">Produit</th>
                   <th className="px-4 lg:px-8 py-4">Catégorie</th>
                   <th className="px-4 lg:px-8 py-4 text-center">Stock</th>
-                  <th className="px-4 lg:px-8 py-4">Prix</th>
+                  <th className="px-4 lg:px-8 py-4">Prix Actuel </th>
+                  <th className="px-4 lg:px-8 py-4">Ancien Prix </th>
                   <th className="px-4 lg:px-8 py-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -452,21 +465,19 @@ const AdminProducts: React.FC = () => {
                       <td className="px-4 lg:px-8 py-4">
                         <div className="flex flex-col items-center gap-1">
                           <span
-                            className={`text-sm lg:text-base font-black ${
-                              product.countInStock < 10
+                            className={`text-sm lg:text-base font-black ${product.countInStock < 10
                                 ? 'text-rose-600'
                                 : 'text-emerald-600'
-                            }`}
+                              }`}
                           >
                             {product.countInStock} PCS
                           </span>
                           <div className="w-12 lg:w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
                             <div
-                              className={`h-full ${
-                                product.countInStock < 10
+                              className={`h-full ${product.countInStock < 10
                                   ? 'bg-rose-500'
                                   : 'bg-emerald-500'
-                              }`}
+                                }`}
                               style={{
                                 width: `${Math.min(product.countInStock * 5, 100)}%`,
                               }}
@@ -588,17 +599,30 @@ const AdminProducts: React.FC = () => {
               <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-6">
                 <div className="space-y-1.5 sm:space-y-2">
                   <label className="text-[8px] sm:text-[9px] lg:text-[10px] font-black text-gray-400 uppercase tracking-wider sm:tracking-widest ml-1">
-                    Prix (DT)
+                    Prix Actuel de vente (DT)
                   </label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={formData.price || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, price: parseFloat(e.target.value) })
-                    }
+                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                     className="w-full px-2.5 sm:px-4 lg:px-6 py-2.5 sm:py-3 lg:py-4 bg-gray-50 border-none rounded-xl sm:rounded-2xl text-sm font-black focus:bg-white focus:ring-2 focus:ring-green-100 outline-none transition-all"
+                  />
+                </div>
+
+                {/* NOUVEAU CHAMP : PRIX BARRÉ */}
+                <div className="space-y-1.5 sm:space-y-2">
+                  <label className="text-[8px] sm:text-[9px] lg:text-[10px] font-black text-gray-400 uppercase tracking-wider sm:tracking-widest ml-1">
+                    Ancien Prix barré (Optionnel)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.originalPrice || ''}
+                    onChange={(e) => setFormData({ ...formData, originalPrice: parseFloat(e.target.value) || undefined })}
+                    className="w-full px-2.5 sm:px-4 lg:px-6 py-2.5 sm:py-3 lg:py-4 bg-rose-50 border-none rounded-xl sm:rounded-2xl text-sm font-black focus:bg-white focus:ring-2 focus:ring-rose-200 outline-none transition-all placeholder-rose-300"
+                    placeholder="Ex: 5.50"
                   />
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">

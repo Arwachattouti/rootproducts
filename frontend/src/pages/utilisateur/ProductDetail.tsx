@@ -485,7 +485,7 @@ const ProductDetail: React.FC = () => {
                   {isInStock ? 'Ajouter au panier' : 'Épuisé'}
                 </button>
 
-                {/* Favori */}
+                {/* Favori 
                 <button
                   className="
                     h-11 sm:h-[52px] px-3 sm:px-4
@@ -498,7 +498,7 @@ const ProductDetail: React.FC = () => {
                   "
                 >
                   <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
-                </button>
+                </button>*/}
               </div>
             </div>
 
@@ -625,7 +625,7 @@ const ProductDetail: React.FC = () => {
               : 'Épuisé'}
           </button>
 
-          {/* Favori */}
+          {/* Favori 
           <button
             className="
               h-10 w-10
@@ -637,7 +637,7 @@ const ProductDetail: React.FC = () => {
             "
           >
             <Heart className="h-4 w-4" />
-          </button>
+          </button>*/}
         </div>
       </div>
     </div>

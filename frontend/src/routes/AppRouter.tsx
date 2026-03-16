@@ -25,7 +25,7 @@ import Carte from '../pages/utilisateur/Carte';
 import Blog from '../pages/utilisateur/Blog';
 import BlogDetail from '../pages/utilisateur/BlogDetail'; 
 import Account from '../pages/utilisateur/Account';
-import Legal from '../pages/utilisateur/Legal';
+import Legal from '../pages/utilisateur/legal';
 import Privacy from '../pages/utilisateur/Privacy';
 import Terms from '../pages/utilisateur/Terms';
 import Login from '../pages/authentification/Login';

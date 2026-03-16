@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Grid, List, Loader2, AlertCircle,
-  SlidersHorizontal, Check, X, Filter,
+  SlidersHorizontal, Check, X, Filter, Tag 
 } from 'lucide-react';
 import ProductCard from '../../components/ProductCard';
 import { useGetProductsQuery } from '../../state/apiService';
@@ -16,6 +16,7 @@ const Products: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('default');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [onlyInStock, setOnlyInStock] = useState<boolean>(false);
+  const [onlyDiscounted, setOnlyDiscounted] = useState<boolean>(false); 
   const [priceRange, setPriceRange] = useState<number>(0);
   const [maxPriceLimit, setMaxPriceLimit] = useState<number>(100);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -53,13 +54,13 @@ const Products: React.FC = () => {
     {
       id: 'sucre',
       value: 'confiture',
-      label: 'Douceurs & Confitures',
+      label: 'Douceurs & confitures',
       description: 'Plaisirs sucrés naturels',
     },
     {
       id: 'essentiels',
       value: ['huile', 'miel'],
-      label: 'Huiles & Miels',
+      label: 'Huiles & miels',
       description: 'Or liquide et nectars du terroir',
     },
     {
@@ -109,6 +110,12 @@ const Products: React.FC = () => {
     if (onlyInStock) result = result.filter((p) => p.countInStock > 0);
     result = result.filter((p) => p.price <= priceRange);
 
+    if (onlyDiscounted) {
+      result = result.filter((p) => p.originalPrice && p.originalPrice > p.price);
+    }
+     // Filtre Prix
+    result = result.filter((p) => p.price <= priceRange);
+
     return result.sort((a, b) => {
       switch (sortBy) {
         case 'price-asc':
@@ -121,7 +128,7 @@ const Products: React.FC = () => {
           return 0;
       }
     });
-  }, [products, selectedCategory, sortBy, onlyInStock, priceRange]);
+  }, [products, selectedCategory, sortBy, onlyInStock,  onlyDiscounted, priceRange]);
 
   const handleCategoryChange = (categoryValue: string | string[]) => {
     const valueToStore = Array.isArray(categoryValue)
@@ -141,6 +148,7 @@ const Products: React.FC = () => {
     setSelectedCategory('');
     setOnlyInStock(false);
     setPriceRange(maxPriceLimit);
+     setOnlyDiscounted(false);
     setSortBy('default');
     setSearchParams({});
   };
@@ -208,6 +216,15 @@ const Products: React.FC = () => {
                 }
               `}
             />
+          </button>
+        </div>
+  {/* NOUVEAU : Toggle En Promotion */}
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          <span className="text-xs sm:text-sm font-bold text-[#4B2E05] flex items-center gap-2">
+            <Tag className="w-3.5 h-3.5 text-rose-500" /> EN PROMOTION
+          </span>
+          <button onClick={() => setOnlyDiscounted(!onlyDiscounted)} className={`relative inline-flex items-center rounded-full transition-colors h-5 w-10 sm:h-6 sm:w-11 ${onlyDiscounted ? 'bg-rose-500' : 'bg-gray-200'}`}>
+            <span className={`inline-block rounded-full bg-white transition-transform h-3 w-3 sm:h-4 sm:w-4 ${onlyDiscounted ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
           </button>
         </div>
 

@@ -14,6 +14,7 @@ import {
 import {
   useGetCartQuery,
   useCreateOrderMutation,
+  useClearCartMutation, // <-- Import unique et propre
 } from '../../state/apiService';
 
 const Checkout: React.FC = () => {
@@ -36,8 +37,8 @@ const Checkout: React.FC = () => {
   }, [items]);
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [createOrder, { isLoading: isCreatingOrder }] =
-    useCreateOrderMutation();
+  const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation();
+  const [clearCart] = useClearCartMutation(); // <-- Initialisation de clearCart
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -73,6 +74,7 @@ const Checkout: React.FC = () => {
     return true;
   };
 
+  // 🚨 FONCTION PRINCIPALE CORRIGÉE : Gère la commande ET le vidage du panier
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -100,8 +102,14 @@ const Checkout: React.FC = () => {
         },
       };
 
+      // 1. Création de la commande dans la base de données
       await createOrder(orderPayload).unwrap();
-      navigate('/order-success');
+
+      // 2. Vidage du panier une fois la commande validée
+      await clearCart().unwrap();
+
+      // 3. Redirection vers la page de succès
+      navigate('/order-success'); 
     } catch (error: any) {
       alert(
         error.data?.message ||

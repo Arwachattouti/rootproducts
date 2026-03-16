@@ -3,11 +3,32 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Eye, Users, Award, Leaf,
-  ArrowRight, Star,
+  ArrowRight, Star,ChevronLeft, ChevronRight, 
 } from 'lucide-react';
 import FeaturedProductsCarousel from '../../components/FeaturedProductsCarousel';
 import { useGetProductsQuery } from '../../state/apiService';
 
+const categories = [
+  {
+    id: 'sucre',
+    value: ['confiture'],
+    label: 'Douceurs & confiture',
+    image: 'https://res.cloudinary.com/dxk2lvcjy/image/upload/v1773346371/1773322842509-019ce246-97b7-7756-b237-f69bce5891ca_wnofzl.png',
+  },
+  {
+    id: 'essentiels',
+    value: ['huile', 'miel'],
+    label: 'Huiles & Miels',
+    image: 'https://res.cloudinary.com/dxk2lvcjy/image/upload/v1773346475/1773321214479-019ce22d-ad82-736d-b149-e7d059e8beb5_xck8mt.png', 
+  },
+  {
+    id: 'epices',
+    value: ['condiments', 'sauce', 'poudre' ],
+    label: 'Épices & condiments',
+    image: 'https://res.cloudinary.com/dxk2lvcjy/image/upload/v1773346464/1773321348111-019ce22f-ecd1-7213-afe7-dfb8db459960_t9hqds.png',
+  }
+  
+];
 const Home: React.FC = () => {
   const {
     data: products = [],
@@ -113,7 +134,7 @@ const Home: React.FC = () => {
 
       {/* ═══════════════════════════════════════
           3. PRODUITS ÉQUITABLES
-      ═══════════════════════════════════════ */}
+      ═══════════════════════════════════════
       <section className="py-8 sm:py-12 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
@@ -148,11 +169,93 @@ const Home: React.FC = () => {
             </Link>
           </div>
         </div>
-      </section>
+      </section>*/}
+
+     <section className="py-14 md:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Title */}
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="font-seasons text-3xl md:text-4xl lg:text-5xl text-[#4B2E05]">
+            Nos Catégories de Produits
+          </h2>
+          
+        </div>
+
+        {/* Categories */}
+        <div className="
+          flex gap-5 overflow-x-auto scrollbar-transparent snap-x snap-mandatory pb-4
+          md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:overflow-visible
+        ">
+
+          {categories.filter(c => c.id !== 'all').map((cat) => (
+            <div
+              key={cat.id}
+              className="
+                relative group
+                min-w-[260px] sm:min-w-[280px] md:min-w-0
+                h-[320px] md:h-[380px]
+                rounded-3xl overflow-hidden
+                shadow-sm hover:shadow-xl
+                transition-all duration-500
+                snap-center
+              "
+            >
+
+              {/* Image */}
+              <img
+                src={cat.image}
+                alt={cat.label}
+                className="
+                  absolute inset-0 w-full h-full object-cover
+                  transition-transform duration-700
+                  group-hover:scale-110
+                "
+              />
+
+              {/* Gradient overlay */}
+              <div className="
+                absolute inset-0
+                bg-gradient-to-t from-black/70 via-black/30 to-transparent
+                transition-opacity duration-500
+              " />
+
+              {/* Content */}
+              <div className="absolute inset-0 flex items-end justify-center p-6 text-center">
+                <h3 className="text-white font-seasons text-xl md:text-2xl tracking-wide">
+                  {cat.label}
+                </h3>
+              </div>
+
+            </div>
+          ))}
+
+        </div>
+
+        {/* CTA */}
+        <div className="mt-12 md:mt-16 text-center">
+          <Link
+            to="/products"
+            className="
+              inline-flex items-center
+              font-seasons text-lg md:text-xl
+              text-[#4B2E05]
+              hover:text-[#357A32]
+              transition-colors
+            "
+          >
+            Voir tous les produits
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Link>
+        </div>
+
+      </div>
+    </section>
 
       {/* ═══════════════════════════════════════
           4. NOTRE HISTOIRE
       ═══════════════════════════════════════ */}
+
       <section className="py-10 sm:py-16 md:py-24 bg-white border-t border-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">

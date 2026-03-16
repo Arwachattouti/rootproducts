@@ -120,79 +120,79 @@ const Cart: React.FC = () => {
        
 
        {/* LISTE PRODUITS */}
-<div className="lg:col-span-2 space-y-4 sm:space-y-6 md:space-y-8">
-  {cart.items.map((item: any) => {
-    if (!item.product) return null;
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 md:space-y-8">
+          {cart.items.map((item: any) => {
+            if (!item.product) return null;
 
-    const { _id, name, images, weight, price } = item.product;
-    const imageUrl = images?.[0] || '/images/placeholder.png';
-    const formattedPrice = (price ?? 0).toFixed(3);
+            const { _id, name, images, weight, price } = item.product;
+            const imageUrl = images?.[0] || '/images/placeholder.png';
+            const formattedPrice = (price ?? 0).toFixed(3);
 
-    return (
-      <div
-        key={_id}
-        className="group relative bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-gray-50 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 md:gap-10 transition-all hover:shadow-2xl hover:shadow-gray-200/40"
-      >
-        {/* Image produit */}
-        <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-[2rem] bg-[#FDFCF9]">
-          <img
-            src={imageUrl}
-            alt={name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
+            return (
+              <div
+                key={_id}
+                className="group relative bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-gray-50 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 md:gap-10 transition-all hover:shadow-2xl hover:shadow-gray-200/40"
+              >
+                {/* Image produit */}
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-[2rem] bg-[#FDFCF9]">
+                  <img
+                    src={imageUrl}
+                    alt={name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+
+                {/* Infos produit */}
+                <div className="flex-1 text-center sm:text-left min-w-0">
+                  <h3 className="text-base sm:text-lg md:text-2xl lg:text-3xl font-seasons text-[#4B2E05] mb-1 sm:mb-2 truncate">
+                    {name}
+                  </h3>
+                  <div className="inline-block px-2 sm:px-3 py-0.5 sm:py-1 bg-gray-50 rounded-md sm:rounded-lg text-xs sm:text-sm md:text-base lg:text-lg font-seasons uppercase tracking-widest mb-2 sm:mb-3 md:mb-4">
+                    {weight || 'Format Standard'}
+                  </div>
+                  <p className="text-[#357A32] font-seasons text-lg sm:text-xl md:text-2xl">
+                    {formattedPrice}{' '}
+                    <span className="text-lg sm:text-xl md:text-2xl">DT</span>
+                  </p>
+                </div>
+
+                {/* Contrôles quantité + suppression */}
+                <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+                  <div className="flex items-center bg-[#FDFCF9] rounded-xl sm:rounded-2xl border border-gray-100 p-0.5 sm:p-1">
+                    <button
+                      disabled={isUpdating}
+                      onClick={() => handleQuantityChange(_id, item.quantity, -1)}
+                      className="p-2 sm:p-2.5 md:p-3 hover:text-[#357A32] text-gray-300 transition-colors disabled:opacity-20"
+                      aria-label="Diminuer la quantité"
+                    >
+                      <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+                    </button>
+                    <span className="w-6 sm:w-7 md:w-8 text-center font-black text-sm sm:text-base text-[#4B2E05]">
+                      {item.quantity}
+                    </span>
+                    <button
+                      disabled={isUpdating}
+                      onClick={() => handleQuantityChange(_id, item.quantity, 1)}
+                      className="p-2 sm:p-2.5 md:p-3 hover:text-[#357A32] text-gray-300 transition-colors disabled:opacity-20"
+                      aria-label="Augmenter la quantité"
+                    >
+                      <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => removeItem(_id)}
+                    className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-xl sm:rounded-2xl transition-all shadow-sm"
+                    title="Supprimer"
+                    aria-label={`Supprimer ${name}`}
+                  >
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-
-        {/* Infos produit */}
-        <div className="flex-1 text-center sm:text-left min-w-0">
-          <h3 className="text-base sm:text-lg md:text-2xl lg:text-3xl font-seasons text-[#4B2E05] mb-1 sm:mb-2 truncate">
-            {name}
-          </h3>
-          <div className="inline-block px-2 sm:px-3 py-0.5 sm:py-1 bg-gray-50 rounded-md sm:rounded-lg text-xs sm:text-sm md:text-base lg:text-lg font-seasons uppercase tracking-widest mb-2 sm:mb-3 md:mb-4">
-            {weight || 'Format Standard'}
-          </div>
-          <p className="text-[#357A32] font-seasons text-lg sm:text-xl md:text-2xl">
-            {formattedPrice}{' '}
-            <span className="text-lg sm:text-xl md:text-2xl">DT</span>
-          </p>
-        </div>
-
-        {/* Contrôles quantité + suppression */}
-        <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
-          <div className="flex items-center bg-[#FDFCF9] rounded-xl sm:rounded-2xl border border-gray-100 p-0.5 sm:p-1">
-            <button
-              disabled={isUpdating}
-              onClick={() => handleQuantityChange(_id, item.quantity, -1)}
-              className="p-2 sm:p-2.5 md:p-3 hover:text-[#357A32] text-gray-300 transition-colors disabled:opacity-20"
-              aria-label="Diminuer la quantité"
-            >
-              <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
-            </button>
-            <span className="w-6 sm:w-7 md:w-8 text-center font-black text-sm sm:text-base text-[#4B2E05]">
-              {item.quantity}
-            </span>
-            <button
-              disabled={isUpdating}
-              onClick={() => handleQuantityChange(_id, item.quantity, 1)}
-              className="p-2 sm:p-2.5 md:p-3 hover:text-[#357A32] text-gray-300 transition-colors disabled:opacity-20"
-              aria-label="Augmenter la quantité"
-            >
-              <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
-            </button>
-          </div>
-
-          <button
-            onClick={() => removeItem(_id)}
-            className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-xl sm:rounded-2xl transition-all shadow-sm"
-            title="Supprimer"
-            aria-label={`Supprimer ${name}`}
-          >
-            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
-      </div>
-    );
-  })}
-</div>
 
         {/* RÉSUMÉ */}
         <div className="lg:col-span-1 w-full">
