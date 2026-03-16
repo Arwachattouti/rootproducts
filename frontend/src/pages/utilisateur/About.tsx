@@ -13,28 +13,27 @@ const About: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       
-      {/* ════════ HERO SECTION ════════ */}
-      <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 lg:pt-28 lg:pb-32 bg-[#FDFCF9] border-b border-gray-100 overflow-hidden">
-        {/* Décoration d'arrière-plan */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#357A32]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#4B2E05]/5 rounded-full blur-3xl" />
+     {/* ════════ HERO SECTION HARMONISÉE ════════ */}
+<section className="py-8 sm:py-12 md:py-20 bg-gray-50 border-b border-gray-100">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+    {/* Badge style Blog */}
+    <span className="inline-block px-2.5 sm:px-3 py-1 rounded bg-[#357A32]/10 text-[#357A32] text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase">
+      Notre essence
+    </span>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white border border-[#357A32]/20 text-[#357A32] text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase mb-6 sm:mb-8 shadow-sm">
-            <Sprout className="w-3 h-3 sm:w-4 sm:h-4" />
-            Notre essence
-          </span>
-          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-[#4B2E05] mb-4 sm:mb-6 leading-tight">
-            L'Âme du <br className="hidden sm:block" />
-            <span className="italic text-[#357A32]">Terroir Tunisien</span>
-          </h1>
-          <p className="max-w-2xl mx-auto text-sm sm:text-base md:text-lg lg:text-xl font-seasons text-gray-600 leading-relaxed">
-            De la terre à votre table, nous cultivons l'authenticité et préservons 
-            le savoir-faire ancestral pour vous offrir le meilleur de la nature.
-          </p>
-        </div>
-      </section>
+    {/* Titre avec font-seasons et couleurs du terroir */}
+    <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-seasons text-[#4B2E05] mt-3 sm:mt-4 md:mt-6 mb-3 sm:mb-4 md:mb-6 leading-tight">
+      L'Âme du <br className="hidden sm:block" />
+      <span className="text-[#357A32] font-seasons">Terroir Tunisien</span>
+    </h1>
 
+    {/* Description centrée et harmonisée */}
+    <p className="max-w-2xl mx-auto font-seasons text-sm sm:text-base md:text-lg lg:text-xl px-2 text-gray-700">
+      De la terre à votre table, nous cultivons l'authenticité et préservons 
+      le <span className="text-[#357A32]">savoir-faire ancestral</span> pour vous offrir le meilleur de la nature.
+    </p>
+  </div>
+</section>
       {/* ════════ STORY SECTION ════════ */}
       <section className="py-12 sm:py-16 md:py-24 bg-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

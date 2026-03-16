@@ -8,8 +8,8 @@ export const apiService = createApi({
      // Si on est en production sur Vercel, on autorise l'origine du site
     // Sinon en local, on garde localhost
     baseQuery: fetchBaseQuery({
-      //   baseUrl: 'http://localhost:5000/api/',
-          baseUrl: '/api/',
+        baseUrl: 'http://localhost:5000/api/',
+       //    baseUrl: '/api/',
         credentials: 'include',
     }),
     tagTypes: ['Product', 'User', 'Order', 'Cart', 'Blog'],
