@@ -69,10 +69,9 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
 
 export const getUserOrders = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        // 💡 CORRECTION : Convertir req.user!._id en string via .toString()
-        const userId = req.user!._id.toString();
+        const userId = req.user!._id;
 
-        const orders = await OrderModel.find({ users: userId }) // Utilisation de l'ID converti
+        const orders = await OrderModel.find({ user: userId as any }) 
             .populate('items.product', 'name price image')
             .sort({ createdAt: -1 });
 

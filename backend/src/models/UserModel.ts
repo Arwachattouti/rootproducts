@@ -1,9 +1,8 @@
-// src/models/UserModel.ts
+
 
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-// Interface Mongoose mise à jour
 export interface IUser extends Document {
     email: string;
     password: string; 
@@ -34,7 +33,7 @@ const UserSchema: Schema = new Schema({
     password: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    phone: { type: String, trim: true }, // 👈 AJOUTÉ ICI dans le Schéma
+    phone: { type: String, trim: true }, 
     role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
@@ -43,7 +42,6 @@ const UserSchema: Schema = new Schema({
     timestamps: true 
 });
 
-// Pré-sauvegarde : Hacher le mot de passe
 UserSchema.pre<IUser>('save', async function () {
     if (!this.isModified('password')) {
         return; 
@@ -52,7 +50,6 @@ UserSchema.pre<IUser>('save', async function () {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Méthode de comparaison pour la connexion
 UserSchema.methods.matchPassword = async function (enteredPassword: string) {
     return await bcrypt.compare(enteredPassword, this.password);
 };

@@ -1,9 +1,7 @@
-// src/models/CartModel.ts
-import mongoose, { Document, Schema } from 'mongoose';
 
-// Interface pour un article du panier (plus facile à manipuler)
+import mongoose, { Document, Schema } from 'mongoose';
 interface ICartItem {
-    product: mongoose.Types.ObjectId | any; // 'any' permet de supporter le produit après .populate()
+    product: mongoose.Types.ObjectId | any; 
     quantity: number;
 }
 

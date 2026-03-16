@@ -8,7 +8,7 @@ const blogSchema = new Schema({
   readTime: { type: String, required: true },
   image: { type: String, required: true },
   excerpt: { type: String, required: true },
-  content: { type: String }, // Texte complet de l'article
+  content: { type: String }, 
   tags: [{ type: String }]
 }, { timestamps: true });
 
